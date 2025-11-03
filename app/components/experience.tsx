@@ -2,10 +2,10 @@ import { experience } from '../config/site'
 
 export default function Experience() {
   return (
-    <section className="max-w-6xl mx-auto px-6 py-16">
-      <div className="text-gray-400 font-mono text-sm mb-8">// experience</div>
+    <section className="max-w-6xl mx-auto px-6 py-8">
+      <div className="text-gray-400 font-mono text-sm mb-6">// experience</div>
 
-      <div className="flex gap-8 mb-8 items-center">
+      <div className="flex gap-8 mb-6 items-center">
         {experience.map((item) => (
           <div
             key={item.alt}
@@ -18,11 +18,6 @@ export default function Experience() {
           </div>
         ))}
       </div>
-
-      <p className="text-gray-300 leading-relaxed max-w-2xl">
-        Currently onboarding law firms into modern automation systems at Quilia &amp; studying CS at UNLV. Previously
-        shift lead at 7 Leaves, robotics program, tutoring underserved students.
-      </p>
     </section>
   )
 }

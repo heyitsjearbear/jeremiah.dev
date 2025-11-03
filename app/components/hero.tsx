@@ -2,18 +2,18 @@ import Image from "next/image"
 
 export default function Hero() {
   return (
-    <section className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
       <div className="flex flex-col md:flex-row md:gap-12 md:items-center">
-        <div className="flex-1 mb-8 md:mb-0">
-          <div className="font-mono text-xs md:text-sm mb-4 md:mb-6" style={{ color: "rgb(96, 165, 250)" }}>
+        <div className="flex-1 mb-6 md:mb-0">
+          <div className="font-mono text-xs md:text-sm mb-3 md:mb-4" style={{ color: "rgb(96, 165, 250)" }}>
             // student founder – systems + ai + dev
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight text-balance">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight text-balance">
             I build systems that help people think clearly and get more done.
           </h1>
 
-          <p className="text-base md:text-lg mb-8 md:mb-10 max-w-2xl leading-relaxed bg-clip-text text-gray-300">
+          <p className="text-base md:text-lg mb-6 md:mb-8 max-w-2xl leading-relaxed bg-clip-text text-gray-300">
             Founder of Zenergy—tools for focus, habits, and mental clarity. Experience across legal tech (Quilia),
             consumer research platforms (SightX: web dev + QA), and AI Camp (applied AI projects & mentorship).
           </p>
@@ -28,7 +28,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="flex-1 md:block mt-8 md:mt-0">
+        <div className="flex-1 md:block mt-6 md:mt-0">
           <Image
             src="/jeremiah-headshot.jpg"
             alt="Jeremiah"
