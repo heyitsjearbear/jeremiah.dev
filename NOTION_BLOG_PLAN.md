@@ -14,11 +14,11 @@
 ### Notion Setup
 1. Create a database for posts with properties:
    - Title (title)
-   - Slug (rich_text or formula)
+   - Slug (Text or Formula)
    - Published (checkbox)
    - PublishedAt (date)
    - Tags (multi-select)
-   - Excerpt (rich_text)
+   - Excerpt (Text)
    - Cover (files or page cover)
    - Author (people or text)
 2. Create an Internal Integration in Notion and copy its Secret.
