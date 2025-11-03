@@ -22,17 +22,17 @@ export const siteConfig = {
 }
 
 export const navigation: NavLink[] = [
-  { label: "Projects", href: "#projects" },
-  { label: "Blog", href: "#blog" },
-  { label: "Videos", href: "#videos" },
-  { label: "Resume", href: "#resume" },
+  { label: "Projects", href: "/projects" },
+  { label: "Blog", href: "/blog" },
+  { label: "Videos", href: "/videos" },
+  { label: "Resume", href: "/resume" },
 ]
 
 export const socialLinks: SocialLink[] = [
-  { label: "GitHub", href: "https://github.com" },
-  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "GitHub", href: "https://github.com/heyitsjearbear" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/jeremiah-ramiscal/" },
   { label: "YouTube", href: "https://youtube.com" },
-  { label: "Email", href: "mailto:hello@jeremiah.dev" },
+  { label: "Email", href: "" },
 ]
 
 export const experience: ExperienceItem[] = [
