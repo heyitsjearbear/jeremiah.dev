@@ -7,7 +7,7 @@
 | **/** (Home) | Who you are, skills, experience, mission |
 | **/projects** | Highlight Zenergy + other projects |
 | **/projects/zenergy** | Deep dive w/ architecture, commits, repo activity |
-| **/blog** | Pull long-form posts from Notion |
+| **/blog** | Pull long-form posts from Sanity (live preview + ISR) |
 | **/videos** | Pull YouTube dev videos / playlists |
 | **/resume** | PDF download + inline version |
 | **/contact** | Simple contact info + social links |
@@ -213,7 +213,10 @@ Grid cards with:
 
 # ✍️ **Blog Page**
 
-- Feed pulls from **Notion**
+- Feed pulls from **Sanity Studio** via GROQ helpers (`getPublishedPosts`) with ISR + webhook-driven revalidation
+- Portable Text rendering with custom serializers for code blocks, embeds, responsive cover imagery
+- Preview pane in Studio mirrors site styling before publish
+- Env: `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN`, `SANITY_WEBHOOK_SECRET`
 - Posts include:
     - system breakdowns
     - Zenergy dev logs
@@ -264,7 +267,7 @@ Content ideas:
 | --- | --- |
 | Framework | Next.js (App Router) |
 | Styling | TailwindCSS |
-| Content | Notion API for blog |
+| Content | Sanity Studio + @sanity/client |
 | Activity | GitHub API (private repo metadata) |
 | Videos | YouTube API |
 | Hosting | Vercel |
@@ -290,7 +293,7 @@ Content ideas:
   navbar, footer, cards, heatmap, commit-feed
 /lib
   github.ts
-  notion.ts
+  sanity.ts
   youtube.ts
 /public
   logos, headshot
