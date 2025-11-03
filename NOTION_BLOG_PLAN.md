@@ -1,7 +1,7 @@
 ## Notion → Vercel Blog Implementation Plan
 
 ### Goals
-- Create and edit blog posts in Notion
+- Create/edit blog posts in Notion
 - Auto-publish to the site’s `/blog` with clean layout, SEO, and fast loads
 - Use Incremental Static Regeneration (ISR) + Vercel Cron to keep content fresh without slow builds
 
