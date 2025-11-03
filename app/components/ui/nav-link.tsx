@@ -1,12 +1,20 @@
 import Link from "next/link"
 
-import { type NavLink } from '../../config/site'
+import { type NavLink } from "../../config/site"
+import { cn } from "../../lib/utils"
 
-export function NavLinkComponent({ label, href }: NavLink) {
+type NavLinkProps = NavLink & {
+  className?: string
+}
+
+export function NavLinkComponent({ label, href, className }: NavLinkProps) {
   return (
     <Link
       href={href}
-      className="text-gray-300 transition-colors cursor-pointer hover:text-blue-400"
+      className={cn(
+        "text-gray-300 transition-colors cursor-pointer hover:text-blue-400",
+        className,
+      )}
     >
       {label}
     </Link>
