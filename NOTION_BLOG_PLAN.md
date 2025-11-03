@@ -21,8 +21,15 @@
    - Excerpt (Text)
    - Cover (files or page cover)
    - Author (people or text)
+   - **Content (Relation)**: Link to the page containing the full post content (optional; alternatively, use the page body itself)
 2. Create an Internal Integration in Notion and copy its Secret.
 3. Share the blog database (and any post pages) with the integration (grants read access).
+
+**Content Strategy:**
+- Each row in the database is a post entry with metadata (title, slug, date, etc.)
+- The post's **actual content** (body, code blocks, images, embeds) lives on the linked page itself
+- When fetching a post, we query its page ID, retrieve all blocks (paragraphs, code, images, etc.), convert them to Markdown, and render
+- Alternatively, if you prefer inline content, store a "Content" Text property; this approach is simpler but less flexible for rich formatting
 
 Reference: Notion API overview and integration model [developers.notion.com/docs/getting-started](https://developers.notion.com/docs/getting-started)
 
@@ -63,6 +70,8 @@ npm install @notionhq/client notion-to-md react-markdown remark-gfm rehype-slug
   - Resolve `Slug` (prefer explicit property; else generate from title)
   - For cover: prefer page cover; fallback to `Cover` property
   - Convert blocks to Markdown via `notion-to-md` and cache per-page using ISR
+  - **Block retrieval**: Use `notion.blocks.children.list()` to fetch all child blocks from the page, then iterate and format each block type (heading, paragraph, code, image, quote, list, etc.)
+  - **Recursive handling**: If blocks contain nested content (e.g., toggle lists, callouts), recursively fetch and flatten them
 
 Skeleton:
 ```ts
@@ -74,7 +83,19 @@ const notion = new Client({ auth: process.env.NOTION_SECRET });
 const n2m = new NotionToMarkdown({ notionClient: notion });
 
 export async function getPublishedPosts() { /* query + map */ }
-export async function getPostBySlug(slug: string) { /* find page + blocks → md */ }
+
+export async function getPostBySlug(slug: string) {
+  // Find page by slug in database
+  // Fetch all blocks using notion.blocks.children.list(pageId)
+  // Convert to Markdown via n2m.pageToMarkdown(pageId)
+  // Return { title, date, author, content (as markdown), ...metadata }
+}
+
+// Helper: recursively fetch and convert nested blocks
+export async function fetchPageContent(pageId: string): Promise<string> {
+  const mdblocks = await n2m.pageToMarkdown(pageId);
+  return n2m.toMarkdownString(mdblocks);
+}
 ```
 
 ### Pages & Routing (Next.js App Router)
