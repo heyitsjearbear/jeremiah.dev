@@ -13,7 +13,7 @@ export default function Hero() {
             I build systems that help people think clearly and get more done.
           </h1>
 
-          <p className="text-base md:text-lg mb-8 md:mb-10 max-w-2xl leading-relaxed bg-gradient-to-r from-yellow-500 via-cyan-500 to-pink-500 bg-clip-text text-transparent">
+          <p className="text-base md:text-lg mb-8 md:mb-10 max-w-2xl leading-relaxed bg-clip-text">
             Founder of Zenergy—tools for focus, habits, and mental clarity. Experience across legal tech (Quilia),
             consumer research platforms (SightX: web dev + QA), and AI Camp (applied AI projects & mentorship).
           </p>
