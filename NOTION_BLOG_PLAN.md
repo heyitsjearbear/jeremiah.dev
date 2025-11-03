@@ -126,6 +126,73 @@ export async function GET() {
 }
 ```
 
+### Publishing Workflow: Notion `Published` Toggle
+**Scenario**: You set `Published = true` in Notion → post appears on your site.
+
+**Options**:
+
+**Option 1: Cron-based (Simple, Default)**
+- No webhooks needed
+- Vercel Cron checks every 5–10 minutes
+- When it runs, it fetches the database, finds newly published posts, and revalidates
+- **Pros**: Simple to set up, no infrastructure
+- **Cons**: Up to 10-minute delay before posts go live
+- **Best for**: Casual updates, non-urgent content
+
+**Option 2: Notion Webhooks (Instant, More Complex)**
+- Notion sends a real-time webhook to `/api/notion-webhook` when you toggle `Published`
+- Your endpoint immediately triggers `revalidatePath()` for that specific post
+- Post goes live within seconds
+- **Setup**:
+  1. Create a Notion webhook integration pointing to `https://yoursite.com/api/notion-webhook`
+  2. Subscribe to database changes (database.updated event)
+  3. Verify Notion's webhook signature in your endpoint
+  4. Trigger targeted revalidation: `revalidatePath('/blog/[slug]')` for that post
+- **Pros**: Instant publishing, real-time feel
+- **Cons**: Requires webhook endpoint, signature verification, Notion webhook reliability
+- **Best for**: Active blogging, real-time publishing expectations
+
+**Option 3: Hybrid (Recommended)**
+- Webhooks for immediate publish on `Published = true`
+- Cron as fallback for edge cases (webhook missed, Notion API hiccup, etc.)
+- Best of both worlds: instant + reliable
+
+Example webhook endpoint:
+```ts
+// app/api/notion-webhook/route.ts
+import { revalidatePath } from 'next/cache';
+import crypto from 'crypto';
+
+export async function POST(req: Request) {
+  // Verify Notion webhook signature
+  const signature = req.headers.get('x-notion-signature');
+  const body = await req.text();
+  const hash = crypto
+    .createHmac('sha256', process.env.NOTION_WEBHOOK_SECRET!)
+    .update(body)
+    .digest('hex');
+  
+  if (hash !== signature) {
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
+  }
+
+  const payload = JSON.parse(body);
+  
+  // If a page's Published property changed, revalidate
+  if (payload.type === 'page_update') {
+    const pageId = payload.page.id;
+    // Fetch the page to get its slug, then revalidate
+    // or revalidate all blog routes as fallback
+    revalidatePath('/blog');
+    revalidatePath('/blog/[slug]', 'page');
+  }
+
+  return Response.json({ ok: true });
+}
+```
+
+**Recommendation**: Start with **Option 1 (Cron, 5–10 min)** for simplicity. Upgrade to **Option 3 (Hybrid)** if users want instant publishing.
+
 ### Vercel Setup
 1. Add env vars (`NOTION_SECRET`, `NOTION_BLOG_DB_ID`) for Production and Preview
 2. Create Vercel Cron (e.g., every 10 minutes) → GET `/api/revalidate-blog`
