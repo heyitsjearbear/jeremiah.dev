@@ -1,8 +1,16 @@
 import { type SocialLink } from '../../config/site'
 
 export function SocialLinkComponent({ label, href }: SocialLink) {
+  const target = href ? '_blank' : undefined
+  const rel = target ? 'noopener noreferrer' : undefined
+
   return (
-    <a href={href} className="transition-colors cursor-pointer" style={{ color: "rgb(96, 165, 250)" }} onMouseEnter={(e) => { e.currentTarget.style.color = "rgb(147, 197, 253)"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "rgb(96, 165, 250)"; }}>
+    <a
+      href={href}
+      target={target}
+      rel={rel}
+      className="text-blue-400 transition-colors cursor-pointer hover:text-blue-300"
+    >
       {label}
     </a>
   )

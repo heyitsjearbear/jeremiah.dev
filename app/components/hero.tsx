@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 
 export default function Hero() {
   return (
@@ -6,7 +7,7 @@ export default function Hero() {
       <div className="flex flex-col md:flex-row md:gap-12 md:items-center">
         <div className="flex-1 mb-6 md:mb-0">
           <div className="font-mono text-xs md:text-sm mb-3 md:mb-4" style={{ color: "rgb(96, 165, 250)" }}>
-            // student founder – systems + ai + dev
+            {'// student founder – systems + ai + dev'}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight text-balance">
@@ -19,12 +20,20 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-            <button className="text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors w-full sm:w-auto cursor-pointer" style={{ backgroundColor: "rgb(96, 165, 250)" }}>
+            <a
+              href="https://zenergy-ai.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white px-6 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto cursor-pointer bg-blue-400 hover:bg-blue-500"
+            >
               View Zenergy
-            </button>
-            <button className="border px-6 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto cursor-pointer text-gray-200" style={{ borderColor: "rgb(107, 114, 128)", }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgb(96, 165, 250)"; e.currentTarget.style.color = "rgb(96, 165, 250)"; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgb(107, 114, 128)"; e.currentTarget.style.color = "rgb(209, 213, 219)"; }}>
+            </a>
+            <Link
+              href="/projects"
+              className="border border-gray-600 px-6 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto cursor-pointer text-gray-200 hover:border-blue-400 hover:text-blue-400"
+            >
               See Projects
-            </button>
+            </Link>
           </div>
         </div>
 
