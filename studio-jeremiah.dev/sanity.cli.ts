@@ -1,18 +1,16 @@
-import {config as loadEnvConfig} from 'dotenv'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
 import {defineCliConfig} from 'sanity/cli'
+import process from 'node:process'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const projectRoot = path.resolve(__dirname, '..')
+const projectId =
+  process.env.SANITY_STUDIO_PROJECT_ID ||
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 
-loadEnvConfig({path: path.join(projectRoot, '.env.local'), override: true})
-loadEnvConfig({path: path.join(projectRoot, '.env'), override: false})
+const dataset =
+  process.env.SANITY_STUDIO_DATASET ||
+  process.env.NEXT_PUBLIC_SANITY_DATASET ||
+  'production'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
-
-if (!projectId) {
+if (!projectId && typeof window === 'undefined') {
   throw new Error('Missing NEXT_PUBLIC_SANITY_PROJECT_ID environment variable.')
 }
 
