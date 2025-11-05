@@ -11,6 +11,7 @@ import {
   getPostForMetadata,
   getPostSlugs,
   urlForImage,
+  type CodeBlockValue,
   type Post,
 } from '@/app/lib/sanity'
 import {draftMode} from 'next/headers'
@@ -73,6 +74,9 @@ export async function generateMetadata({params}: PageParams): Promise<Metadata> 
   }
 }
 
+const isCodeBlock = (block: Post['body'][number]): block is CodeBlockValue =>
+  block._type === 'codeBlock'
+
 const estimateReadingMinutes = (post: Post) => {
   const words = post.body.reduce((total, block) => {
     if (block._type === 'block') {
@@ -85,7 +89,7 @@ const estimateReadingMinutes = (post: Post) => {
       return total + childWords
     }
 
-    if (block._type === 'codeBlock') {
+    if (isCodeBlock(block)) {
       const code = block.code ?? ''
       return total + code.trim().split(/\s+/).filter(Boolean).length
     }
