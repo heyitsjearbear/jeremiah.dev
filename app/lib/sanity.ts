@@ -41,7 +41,7 @@ export const sanityClient = createClient({
 export const previewClient = createClient({
   ...sharedConfig,
   useCdn: false,
-  perspective: 'previewDrafts' as const,
+  perspective: 'drafts' as const,
 })
 
 const builder = imageUrlBuilder({

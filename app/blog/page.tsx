@@ -1,6 +1,4 @@
 import type {Metadata} from 'next'
-import Link from 'next/link'
-import {ArrowUpRight} from 'lucide-react'
 import {draftMode} from 'next/headers'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
