@@ -1,6 +1,7 @@
 import type {Metadata} from 'next'
 import Link from 'next/link'
 import {ArrowUpRight} from 'lucide-react'
+import {draftMode} from 'next/headers'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import {PostCard} from './_components/post-card'
@@ -16,12 +17,19 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-  const posts = await getPublishedPosts()
+  const draft = await draftMode()
+  const previewEnabled = draft.isEnabled || process.env.NODE_ENV !== 'production'
+  const posts = await getPublishedPosts({preview: previewEnabled})
 
   return (
-    <main className="min-h-screen bg-gray-800 text-white">
+    <main className="flex min-h-screen flex-col bg-gray-800 text-white">
       <Header />
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 pb-24 pt-16 md:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-4 pb-16 pt-16 md:px-6 lg:px-8">
+        {previewEnabled ? (
+          <div className="rounded-xl border border-blue-400/40 bg-blue-500/10 px-4 py-3 font-mono text-xs uppercase tracking-[0.25em] text-blue-200">
+            Preview mode · Draft content visible only to you
+          </div>
+        ) : null}
         {posts.length ? (
           <>
             <div className="space-y-6">
@@ -42,16 +50,16 @@ export default async function BlogPage() {
             </div>
           </>
         ) : (
-          <section className="mx-auto flex min-h-[50vh] w-full max-w-4xl flex-col items-center justify-center gap-8 text-center">
+          <section className="mx-auto flex min-h-[50vh] w-full max-w-4xl flex-1 flex-col items-center justify-center gap-8 text-center">
             <p className="rounded-full border border-blue-400/30 bg-blue-500/5 px-4 py-2 font-mono text-xs uppercase tracking-[0.3em] text-blue-300">
-              Publishing soon
+              No posts yet
             </p>
             <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl">
-              Essays in Craft are Almost Here
+              Drafting the first stories
             </h1>
             <p className="max-w-2xl text-base text-gray-300 md:text-lg">
-              The blog feed boots up as soon as the first post is published in Sanity. Check back
-              shortly—or subscribe to the newsletter to catch the drop first.
+              Nothing’s live just yet, but the first drops are in motion. Once a post publishes in
+              Sanity, it will surface here instantly.
             </p>
             <Link
               href="mailto:jeremiah@jeremiah.dev"

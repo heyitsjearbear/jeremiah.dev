@@ -12,9 +12,8 @@ import {
   getPostSlugs,
   urlForImage,
   type Post,
-  type CodeBlockValue,
 } from '@/app/lib/sanity'
-import type {PortableTextBlock, PortableTextSpan} from '@portabletext/types'
+import {draftMode} from 'next/headers'
 
 type PageParams = {
   params: Promise<{
@@ -37,7 +36,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({params}: PageParams): Promise<Metadata> {
   const {slug} = await params
-  const post = await getPostForMetadata(slug)
+  const draft = await draftMode()
+  const previewEnabled = draft.isEnabled || process.env.NODE_ENV !== 'production'
+  const post = await getPostForMetadata(slug, {preview: previewEnabled})
 
   if (!post) {
     return {
@@ -72,29 +73,21 @@ export async function generateMetadata({params}: PageParams): Promise<Metadata> 
   }
 }
 
-const countWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length
-
-const isPortableTextBlock = (
-  block: Post['body'][number],
-): block is PortableTextBlock<PortableTextSpan> => block._type === 'block'
-
-const isCodeBlock = (block: Post['body'][number]): block is CodeBlockValue =>
-  block._type === 'codeBlock'
-
 const estimateReadingMinutes = (post: Post) => {
   const words = post.body.reduce((total, block) => {
-    if (isPortableTextBlock(block)) {
-      const childWords = (block.children ?? []).reduce((acc, child) => {
-        if (typeof child.text === 'string') {
-          return acc + countWords(child.text)
-        }
-        return acc
-      }, 0)
+    if (block?._type === 'block') {
+      const blockChildren = (block.children ?? []).map((child) => ('text' in child ? child.text : ''))
+      const childWords = blockChildren
+        .join(' ')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length
       return total + childWords
     }
 
-    if (isCodeBlock(block)) {
-      return total + countWords(block.code ?? '')
+    if (block?._type === 'codeBlock') {
+      const code = block.code ?? ''
+      return total + code.trim().split(/\s+/).filter(Boolean).length
     }
 
     return total
@@ -105,7 +98,9 @@ const estimateReadingMinutes = (post: Post) => {
 
 export default async function BlogPostPage({params}: PageParams) {
   const {slug} = await params
-  const post = await getPostBySlug(slug)
+  const draft = await draftMode()
+  const previewEnabled = draft.isEnabled || process.env.NODE_ENV !== 'production'
+  const post = await getPostBySlug(slug, {preview: previewEnabled})
 
   if (!post) {
     notFound()
@@ -116,11 +111,16 @@ export default async function BlogPostPage({params}: PageParams) {
   const publishedDate = post.publishedAt ? dateFormatter.format(new Date(post.publishedAt)) : null
 
   return (
-    <main className="min-h-screen bg-gray-800 text-white">
+    <main className="flex min-h-screen flex-col bg-gray-800 text-white">
       <Header />
-      <article className="relative pb-24">
+      <article className="relative flex-1 pb-24">
         <div className="absolute inset-x-0 top-0 -z-10 h-96 bg-gradient-to-b from-gray-900 via-gray-950 to-black" />
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 pt-16 md:px-6">
+          {previewEnabled ? (
+            <div className="rounded-xl border border-blue-400/40 bg-blue-500/10 px-4 py-3 font-mono text-xs uppercase tracking-[0.25em] text-blue-200">
+              Preview mode · Draft content visible only to you
+            </div>
+          ) : null}
           <div className="flex items-center justify-between">
             <Link
               href="/blog"

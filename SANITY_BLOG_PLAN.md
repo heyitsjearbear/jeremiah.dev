@@ -84,15 +84,15 @@
 6. Test preview flow: open Studio preview pane (or manually visit `/api/preview?secret=...&slug=...`), confirm draft content renders, then exit via `/api/exit-preview`.
 
 ### Integration Checklist
-- [ ] Add `blockContent` and `post` schemas; export via `schemaTypes/index.ts`.
+- [x] Add `blockContent` and `post` schemas; export via `schemaTypes/index.ts`.
 - [ ] Seed at least one published and one draft post for testing.
-- [ ] Install `@sanity/client`, `@portabletext/react`, `@sanity/image-url` in the Next.js workspace.
-- [ ] Implement `app/lib/sanity.ts` with strictly typed GROQ helpers.
-- [ ] Build `/app/blog/page.tsx` list view with ISR + motion polish.
-- [ ] Build `/app/blog/[slug]/page.tsx` detail view with Portable Text renderer.
-- [ ] Configure `next.config.ts` `images.remotePatterns` for `cdn.sanity.io`.
+- [x] Install `@sanity/client`, `@portabletext/react`, `@sanity/image-url` in the Next.js workspace.
+- [x] Implement `app/lib/sanity.ts` with strictly typed GROQ helpers.
+- [x] Build `/app/blog/page.tsx` list view with ISR + motion polish.
+- [x] Build `/app/blog/[slug]/page.tsx` detail view with Portable Text renderer.
+- [x] Configure `next.config.ts` `images.remotePatterns` for `cdn.sanity.io`.
 - [ ] Implement `/api/sanity-webhook` and register the webhook in Sanity.
-- [ ] Populate `.env.local` / `.env.example` and set Vercel env vars.
-- [ ] Wire up draft preview flow (`/api/preview`, `/api/exit-preview`, draft-aware fetchers).
+- [x] Populate `.env.local` / `.env.example` and set Vercel env vars.
+- [x] Wire up draft preview flow (`/api/preview`, `/api/exit-preview`, draft-aware fetchers, auto-preview in dev).
 
 Reference docs: [Sanity schema fundamentals](https://www.sanity.io/docs/schema-types), [GROQ fetching](https://www.sanity.io/docs/groq), [Portable Text -> React](https://www.sanity.io/docs/block-content), [Next.js ISR](https://nextjs.org/docs/app/building-your-application/data-fetching/revalidating).

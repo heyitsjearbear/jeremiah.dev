@@ -12,13 +12,15 @@ Routes, pages, and layouts live under `app/`, with shared pieces in `app/compone
 Sanity Studio lives entirely inside `studio-jeremiah.dev/`. Studio-only dependencies, scripts, and configuration should stay scoped to that folder so the frontend workspace remains clean; shared Sanity fetch/render helpers belong in the Next.js app.
 
 ## Build, Test, and Quality Commands
-Use `npm run dev` for local development, `npm run build` for production bundles, and `npm run start` to verify the built output. `npm run lint` enforces `eslint-config-next` Core Web Vitals rules and should run before every PR.
+Use `npm run dev` for local development, make sure to run `npm run build` everytime the agent is done running for production bundles and so that it passes checks for vercel deployment (if it doesn't please fix those issues), and `npm run start` to verify the built output. Make sure to run `npm run lint` after the agent is done running to make sure we pass lint check (if not then fix those issues), which enforces `eslint-config-next` Core Web Vitals rules and should run before every PR.
 
 ## Coding Conventions
 Default to functional server components, marking client components only when interactivity or browser APIs demand it (`"use client"`). Keep TypeScript strict; no `any` without justification. Compose styles with Tailwind utilities, extracting repeated patterns into dedicated components. Prefer PascalCase filenames, camelCase variables, and the `cn` helper for conditional classes. Inline RGB values when tailoring hover borders or motion cues.
 
 ## Sanity Content Workflow
 Sanity Studio owns blog authoring. Schemas (`post`, `blockContent`) live in the Studio project, while `lib/sanity.ts` handles GROQ helpers (`getPublishedPosts`, `getPostSlugs`, `getPostBySlug`). Render with `@portabletext/react` and revalidate via `/api/sanity-webhook` so publishes refresh `/blog` and the matching post immediately.
+
+Draft previews are enabled automatically in local development (drafts render without a secret). For hosted preview/production environments, hit `/api/preview?secret=...&slug=...` to enable and `/api/exit-preview` to disable. Keep `SANITY_PREVIEW_SECRET` and `SANITY_API_READ_TOKEN` populated locally and in Vercel so authors can review unpublished changes on the frontend.
 
 ## Data, Config, and Motion
 Core data flows: Sanity for blog content, GitHub for activity, YouTube for videos, plus static Resume/About/Projects copy. No database—lean on caching and lightweight fetches. Keep `.env.example` updated with Sanity project ID, dataset, read token, and webhook secret. Surface new motion or content integrations in PRs.

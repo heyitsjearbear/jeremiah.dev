@@ -16,21 +16,32 @@ if (!dataset) {
 
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01'
 const token = process.env.SANITY_API_READ_TOKEN
+const warnMissingToken =
+  process.env.NODE_ENV !== 'production' && !token
+
+if (warnMissingToken) {
+  console.warn(
+    'Preview/Draft fetching requires SANITY_API_READ_TOKEN. Draft content will fall back to published data until the token is set.',
+  )
+}
 
 const sharedConfig = {
   projectId,
   dataset,
   apiVersion,
-  useCdn: process.env.NODE_ENV === 'production',
-  perspective: 'published' as const,
   token,
 }
 
-export const sanityClient = createClient(sharedConfig)
+export const sanityClient = createClient({
+  ...sharedConfig,
+  useCdn: process.env.NODE_ENV === 'production',
+  perspective: 'published' as const,
+})
 
 export const previewClient = createClient({
   ...sharedConfig,
   useCdn: false,
+  perspective: 'previewDrafts' as const,
 })
 
 const builder = imageUrlBuilder({
@@ -116,34 +127,67 @@ const postDetailFields = groq`{
   seo
 }`
 
-export async function fetchSanity<T>(query: string, params: QueryParams = {}) {
-  return sanityClient.fetch<T>(query, params, {
-    next: {
-      revalidate: 60,
-    },
-  })
+type SanityFetchOptions = {
+  preview?: boolean
+  revalidate?: number
 }
 
-export const getPublishedPosts = async (): Promise<PostCard[]> => {
-  const query = groq`*[_type == "post" && defined(slug.current) && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc) ${postFields}`
-  return fetchSanity<PostCard[]>(query)
+const defaultRevalidate = 60
+let previewFallbackLogged = false
+
+async function sanityFetch<T>(
+  query: string,
+  params: QueryParams = {},
+  {preview = false, revalidate = defaultRevalidate}: SanityFetchOptions = {},
+) {
+  const usePreviewClient = preview && token
+  const client = usePreviewClient ? previewClient : sanityClient
+  if (preview && !token && process.env.NODE_ENV !== 'production' && !previewFallbackLogged) {
+    console.warn(
+      'Preview requested but SANITY_API_READ_TOKEN is missing. Falling back to published content.',
+    )
+    previewFallbackLogged = true
+  }
+  const fetchOptions = usePreviewClient
+    ? {cache: 'no-store' as const}
+    : {
+        next: {
+          revalidate,
+        },
+      }
+
+  return client.fetch<T>(query, params, fetchOptions)
+}
+
+const publishedPostsQuery = groq`*[_type == "post" && defined(slug.current) && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc) ${postFields}`
+
+const previewPostsQuery = groq`*[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))] | order(coalesce(publishedAt, _updatedAt) desc) ${postFields}`
+
+export const getPublishedPosts = async ({preview = false}: {preview?: boolean} = {}) => {
+  const query = preview ? previewPostsQuery : publishedPostsQuery
+  return sanityFetch<PostCard[]>(query, {}, {preview})
 }
 
 export const getPostSlugs = async (): Promise<string[]> => {
   const query = groq`*[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))]{ "slug": slug.current }`
-  const results = await fetchSanity<Array<{slug: string}>>(query)
+  const results = await sanityFetch<Array<{slug: string}>>(query)
   return results.map((item) => item.slug)
 }
 
-export const getPostBySlug = async (slug: string): Promise<Post | null> => {
-  const query = groq`*[_type == "post" && slug.current == $slug][0]${postDetailFields}`
-  const post = await fetchSanity<Post | null>(query, {slug})
+const postBySlugQuery = groq`*[_type == "post" && slug.current == $slug][0]${postDetailFields}`
+
+export const getPostBySlug = async (slug: string, {preview = false}: {preview?: boolean} = {}) => {
+  const post = await sanityFetch<Post | null>(postBySlugQuery, {slug}, {preview})
   return post ?? null
 }
 
-export const getPostForMetadata = async (slug: string) => {
-  const query = groq`*[_type == "post" && slug.current == $slug][0]{title, excerpt, seo, coverImage, publishedAt}`
-  return fetchSanity<{
+const postMetadataQuery = groq`*[_type == "post" && slug.current == $slug][0]{title, excerpt, seo, coverImage, publishedAt}`
+
+export const getPostForMetadata = async (
+  slug: string,
+  {preview = false}: {preview?: boolean} = {},
+) => {
+  return sanityFetch<{
     title?: string
     excerpt?: string
     publishedAt?: string
@@ -153,5 +197,5 @@ export const getPostForMetadata = async (slug: string) => {
       metaImage?: SanityImage
     }
     coverImage?: SanityImage
-  } | null>(query, {slug})
+  } | null>(postMetadataQuery, {slug}, {preview})
 }
