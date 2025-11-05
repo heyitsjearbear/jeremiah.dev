@@ -9,6 +9,8 @@ Design dark-first (`bg-gray-800`) with white headlines, gray-300 secondary text,
 ## Project Structure & Modules
 Routes, pages, and layouts live under `app/`, with shared pieces in `app/components` and shadcn-style primitives in `app/components/ui`. Blog index and detail live in `app/blog`. Keep Sanity helpers in `app/lib/sanity.ts`, site config in `app/config/site.ts`, utilities in `app/lib`, hooks in `app/hooks`, and assets in `public/`. Tailwind tokens sit in `app/globals.css`; use the `@/*` alias for cross-folder imports.
 
+Sanity Studio lives entirely inside `studio-jeremiah.dev/`. Studio-only dependencies, scripts, and configuration should stay scoped to that folder so the frontend workspace remains clean; shared Sanity fetch/render helpers belong in the Next.js app.
+
 ## Build, Test, and Quality Commands
 Use `npm run dev` for local development, `npm run build` for production bundles, and `npm run start` to verify the built output. `npm run lint` enforces `eslint-config-next` Core Web Vitals rules and should run before every PR.
 
