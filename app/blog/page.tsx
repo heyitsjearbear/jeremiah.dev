@@ -58,16 +58,8 @@ export default async function BlogPage() {
               Drafting the first stories
             </h1>
             <p className="max-w-2xl text-base text-gray-300 md:text-lg">
-              Nothing’s live just yet, but the first drops are in motion. Once a post publishes in
-              Sanity, it will surface here instantly.
+              Nothing’s live just yet, but the first drops are in motion.
             </p>
-            <Link
-              href="mailto:jeremiah@jeremiah.dev"
-              className="inline-flex items-center gap-2 rounded-full border border-blue-400/40 bg-blue-500/10 px-5 py-3 font-mono text-sm uppercase tracking-[0.2em] text-blue-300 transition hover:border-blue-300 hover:bg-blue-500/20 hover:text-white"
-            >
-              Notify me
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
           </section>
         )}
       </div>
