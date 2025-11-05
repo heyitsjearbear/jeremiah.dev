@@ -75,7 +75,7 @@ export async function generateMetadata({params}: PageParams): Promise<Metadata> 
 
 const estimateReadingMinutes = (post: Post) => {
   const words = post.body.reduce((total, block) => {
-    if (block?._type === 'block') {
+    if (block._type === 'block') {
       const blockChildren = (block.children ?? []).map((child) => ('text' in child ? child.text : ''))
       const childWords = blockChildren
         .join(' ')
@@ -85,7 +85,7 @@ const estimateReadingMinutes = (post: Post) => {
       return total + childWords
     }
 
-    if (block?._type === 'codeBlock') {
+    if (block._type === 'codeBlock') {
       const code = block.code ?? ''
       return total + code.trim().split(/\s+/).filter(Boolean).length
     }
