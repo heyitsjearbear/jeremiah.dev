@@ -23,3 +23,4 @@ Core data flows: Sanity for blog content, GitHub for activity, YouTube for video
 
 ## Collaboration Practices
 Follow the repository’s Conventional Commit style (`docs: …`, `refactor: …`, `feat: …`). Keep PRs scoped, describe intent, list commands executed, and attach UI screenshots or Loom clips when visuals shift. Never auto-commit on behalf of the maintainer—surface changes for review and let the owner merge when ready.
+Codex agents must not stage or commit changes; the maintainer will review and handle all git operations manually.
