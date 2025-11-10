@@ -145,7 +145,6 @@ export default async function BlogPostPage({params}: PageParams) {
     notFound()
   }
 
-  const heroUrl = urlForImage(post.coverImage)?.width(1600).height(900).quality(85).url()
   const readingMinutes = estimateReadingMinutes(post)
   const publishedDate = post.publishedAt ? dateFormatter.format(new Date(post.publishedAt)) : null
   const youtubeId = getYouTubeId(post.youtubeUrl)
@@ -203,24 +202,6 @@ export default async function BlogPostPage({params}: PageParams) {
               </h1>
             </div>
           </header>
-
-          {heroUrl ? (
-            <figure className="overflow-hidden rounded-3xl border border-white/10 bg-gray-900/80 shadow-lg shadow-sky-400/10">
-              <Image
-                src={heroUrl}
-                alt={post.coverImage?.alt ?? post.title}
-                width={1600}
-                height={900}
-                className="h-auto w-full object-cover"
-                priority
-              />
-              {(post.coverImage?.caption || post.coverImage?.alt) && (
-                <figcaption className="border-t border-white/5 px-6 py-4 text-sm text-gray-400">
-                  {post.coverImage?.caption || post.coverImage?.alt}
-                </figcaption>
-              )}
-            </figure>
-          ) : null}
 
           {youtubeId && youtubeThumbnailUrl && youtubeWatchUrl ? (
             <Link
