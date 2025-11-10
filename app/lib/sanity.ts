@@ -85,8 +85,9 @@ type BasePostFields = {
   }
   publishedAt: string
   excerpt: string
-  coverImage: SanityImage
+  coverImage?: SanityImage | null
   tags: string[]
+  youtubeUrl?: string | null
 }
 
 export type PostCard = BasePostFields & {
@@ -112,6 +113,7 @@ const postFields = groq`{
   publishedAt,
   excerpt,
   coverImage,
+  youtubeUrl,
   "tags": coalesce(tags, []),
 }`
 
@@ -122,6 +124,7 @@ const postDetailFields = groq`{
   publishedAt,
   excerpt,
   coverImage,
+  youtubeUrl,
   "tags": coalesce(tags, []),
   body,
   seo
@@ -196,6 +199,6 @@ export const getPostForMetadata = async (
       metaDescription?: string
       metaImage?: SanityImage
     }
-    coverImage?: SanityImage
+    coverImage?: SanityImage | null
   } | null>(postMetadataQuery, {slug}, {preview})
 }

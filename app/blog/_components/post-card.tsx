@@ -33,7 +33,7 @@ export function PostCard({post, className}: PostCardProps) {
         {imageUrl ? (
           <Image
             src={imageUrl}
-            alt={post.coverImage.alt ?? post.title}
+            alt={post.coverImage?.alt ?? post.title}
             fill
             className="object-cover transition duration-500 ease-out group-hover:scale-[1.02]"
             sizes="(min-width: 1280px) 544px, (min-width: 768px) 50vw, 90vw"

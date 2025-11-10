@@ -97,10 +97,31 @@ export default defineType({
           title: 'Caption',
         }),
       ],
+    }),
+    defineField({
+      name: 'youtubeUrl',
+      title: 'YouTube video URL',
+      type: 'url',
+      group: 'content',
+      description: 'Optional video to feature alongside the post.',
       validation: (rule) =>
-        rule.custom(
-          requireWhenPublished('A hero image is required before publishing.'),
-        ),
+        rule
+          .uri({
+            scheme: ['https', 'http'],
+            allowRelative: false,
+          })
+          .custom((value) => {
+            if (!value) {
+              return true
+            }
+            try {
+              const {hostname} = new URL(value)
+              const allowedHosts = ['youtube.com', 'www.youtube.com', 'youtu.be']
+              return allowedHosts.includes(hostname) || 'Use a valid YouTube URL.'
+            } catch {
+              return 'Enter a valid URL.'
+            }
+          }),
     }),
     defineField({
       name: 'body',

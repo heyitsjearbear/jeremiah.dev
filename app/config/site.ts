@@ -31,7 +31,7 @@ export const navigation: NavLink[] = [
 export const socialLinks: SocialLink[] = [
   { label: "GitHub", href: "https://github.com/heyitsjearbear" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/jeremiah-ramiscal/" },
-  { label: "YouTube", href: "https://youtube.com" },
+  { label: "YouTube", href: "https://www.youtube.com/@heyitsjearbear"},
   { label: "Email", href: "" },
 ]
 
