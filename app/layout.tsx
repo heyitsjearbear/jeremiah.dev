@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jeremiah | Systems & AI Engineer",
+  title: "Jeremiah Ramiscal",
   description: "Student founder building tools for focus, clarity, and impact.",
 };
 
