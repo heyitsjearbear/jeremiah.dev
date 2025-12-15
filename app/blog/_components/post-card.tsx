@@ -9,6 +9,41 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
 })
 
+const getYouTubeId = (youtubeUrl?: string | null) => {
+  if (!youtubeUrl) {
+    return null
+  }
+  try {
+    const parsed = new URL(youtubeUrl)
+    const host = parsed.hostname.replace(/^www\./, '')
+
+    if (host === 'youtu.be') {
+      return parsed.pathname.slice(1)
+    }
+
+    if (host === 'youtube.com') {
+      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/)
+      if (shortsMatch?.[1]) {
+        return shortsMatch[1]
+      }
+
+      const embedMatch = parsed.pathname.match(/^\/embed\/([^/]+)/)
+      if (embedMatch?.[1]) {
+        return embedMatch[1]
+      }
+
+      const videoId = parsed.searchParams.get('v')
+      if (videoId) {
+        return videoId
+      }
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
 type PostCardProps = {
   post: SanityPostCard
   className?: string
@@ -16,6 +51,11 @@ type PostCardProps = {
 
 export function PostCard({post, className}: PostCardProps) {
   const imageUrl = urlForImage(post.coverImage)?.width(960).height(540).quality(85).url()
+  const youtubeId = getYouTubeId(post.youtubeUrl)
+  const youtubeThumbnailUrl = youtubeId
+    ? `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`
+    : null
+  const fallbackImageUrl = imageUrl || youtubeThumbnailUrl
   const href = `/blog/${post.slug.current}`
   const formattedPublishedAt = post.publishedAt
     ? dateFormatter.format(new Date(post.publishedAt))
@@ -30,9 +70,9 @@ export function PostCard({post, className}: PostCardProps) {
       )}
     >
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-800/70">
-        {imageUrl ? (
+        {fallbackImageUrl ? (
           <Image
-            src={imageUrl}
+            src={fallbackImageUrl}
             alt={post.coverImage?.alt ?? post.title}
             fill
             className="object-cover transition duration-500 ease-out group-hover:scale-[1.02]"
