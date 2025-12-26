@@ -51,7 +51,7 @@ export default function Hero() {
             alt="Jeremiah"
             width={400}
             height={320}
-            className="rounded-lg object-cover w-full h-[320px] flex-shrink-0"
+            className="rounded-lg object-cover object-[50%_15%] w-full h-[320px] flex-shrink-0"
             priority
           />
 
