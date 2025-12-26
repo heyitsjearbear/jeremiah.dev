@@ -39,17 +39,14 @@ export const experience: ExperienceItem[] = [
   { src: "/logos/sightx.webp", alt: "SightX" },
   { src: "/logos/ai-camp.png", alt: "AI Camp" },
   { src: "/logos/quilia.jpg", alt: "Quilia" },
+  { src: "/logos/mofloai_logo.png", alt: "MofloAI" },
 ]
 
 export const techStack: TechItem[] = [
-  "Go",
   "Next.js",
-  "Node",
-  "Redis",
   "Postgres",
   "Supabase",
   "Tailwind",
   "TypeScript",
-  "Docker",
   "Vercel",
 ]

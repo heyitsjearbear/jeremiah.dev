@@ -37,7 +37,7 @@ export default async function BlogPage() {
                 </h1>
                 <p className="max-w-2xl text-base text-gray-300 md:text-lg">
                   Field notes on engineering clarity, building in the open, and the frameworks
-                  powering jeremiah.dev. New posts land here as soon as they publish in Sanity.
+                  powering jeremiah.dev.
                 </p>
               </div>
             </div>
