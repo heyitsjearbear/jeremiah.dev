@@ -16,21 +16,21 @@ export default function QuickTodos() {
   const completedCount = todos.filter(t => t.completed).length
 
   return (
-    <div className="w-full">
-      <h3 className="text-sm font-medium text-gray-300 mb-3">
+    <div className="w-full h-full flex flex-col">
+      <h3 className="text-sm font-medium text-gray-300 mb-1.5 flex-shrink-0">
         Focus ({completedCount}/{todos.length})
       </h3>
-      <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
-        <div className="space-y-2">
+      <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 flex-1 flex flex-col min-h-0">
+        <div className="space-y-1 flex-1 overflow-hidden">
           {todos.map((todo) => (
             <div
               key={todo.id}
-              className="flex items-start gap-3 group relative"
+              className="flex items-start gap-2 group relative"
               title={todo.text}
             >
-              <div className="mt-0.5">
+              <div className="mt-0.5 flex-shrink-0">
                 <div
-                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                  className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${
                     todo.completed
                       ? 'bg-blue-500 border-blue-500'
                       : 'border-gray-600'
@@ -38,7 +38,7 @@ export default function QuickTodos() {
                 >
                   {todo.completed && (
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="w-2.5 h-2.5 text-white"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -52,7 +52,7 @@ export default function QuickTodos() {
                 </div>
               </div>
               <span
-                className={`text-xs flex-1 ${
+                className={`text-[10px] leading-tight flex-1 truncate ${
                   todo.completed
                     ? 'text-gray-500 line-through'
                     : 'text-gray-300'
@@ -64,8 +64,8 @@ export default function QuickTodos() {
           ))}
         </div>
 
-        <div className="mt-3 pt-3 border-t border-gray-800">
-          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div className="mt-2 pt-2 border-t border-gray-800 flex-shrink-0">
+          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-500 transition-all duration-300"
               style={{ width: `${(completedCount / todos.length) * 100}%` }}

@@ -82,27 +82,27 @@ export default function ActivityHeatmap() {
   }
 
   return (
-    <div className="w-full flex flex-col">
-      <h3 className="text-sm font-medium text-gray-300 mb-3">Locked In</h3>
-      <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-800 relative flex-1 flex flex-col justify-between">
-        <div className="flex gap-1.5 flex-1 min-h-0">
+    <div className="w-full h-full flex flex-col">
+      <h3 className="text-sm font-medium text-gray-300 mb-1.5 flex-shrink-0">Locked In</h3>
+      <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 relative flex-1 flex flex-col min-h-0">
+        <div className="flex gap-1 flex-1 min-h-0">
           {/* Day labels */}
-          <div className="flex flex-col justify-around pr-2">
+          <div className="flex flex-col justify-around pr-1.5 flex-shrink-0">
             {days.map((day, idx) => (
-              <div key={idx} className="text-[10px] text-gray-500 flex items-center h-[14.28%]">
+              <div key={idx} className="text-[9px] text-gray-500 flex items-center">
                 {day}
               </div>
             ))}
           </div>
 
           {/* Heatmap grid */}
-          <div className="flex gap-1 flex-1 items-center">
+          <div className="flex gap-0.5 flex-1 items-stretch overflow-hidden">
             {weeks.map((week, weekIdx) => (
-              <div key={weekIdx} className="flex flex-col gap-1 h-full justify-center flex-1">
+              <div key={weekIdx} className="flex flex-col gap-0.5 flex-1 justify-between">
                 {week.map((day, dayIdx) => (
                   <div
                     key={dayIdx}
-                    className={`w-full aspect-square rounded-sm ${getColor(day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
+                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
                   />
@@ -112,13 +112,13 @@ export default function ActivityHeatmap() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-3 text-[10px] text-gray-500">
+        <div className="flex items-center gap-1.5 mt-2 text-[9px] text-gray-500 flex-shrink-0">
           <span>Less</span>
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             {[0, 1, 2, 3, 4].map((level) => (
               <div
                 key={level}
-                className={`w-3 h-3 rounded-sm ${getColor(level)}`}
+                className={`w-2.5 h-2.5 rounded-[2px] ${getColor(level)}`}
               />
             ))}
           </div>

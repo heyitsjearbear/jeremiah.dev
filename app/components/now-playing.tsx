@@ -41,7 +41,7 @@ export default function NowPlaying() {
   return (
     <div className="w-full">
       <h3 className="text-sm font-medium text-gray-300 mb-3">Now Playing</h3>
-      <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800 relative overflow-hidden">
+      <div className="bg-gray-900/50 rounded-lg p-1.5 border border-gray-800 relative overflow-hidden">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 animate-pulse" />
 
