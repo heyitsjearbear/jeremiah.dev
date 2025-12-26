@@ -1,5 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
+import ActivityHeatmap from "./activity-heatmap"
+import QuickTodos from "./quick-todos"
+import NowPlaying from "./now-playing"
 
 export default function Hero() {
   return (
@@ -37,7 +40,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="flex-1 md:block mt-6 md:mt-0">
+        <div className="flex-1 md:block mt-6 md:mt-0 space-y-6">
           <Image
             src="/jeremiah-headshot.jpg"
             alt="Jeremiah"
@@ -46,6 +49,19 @@ export default function Hero() {
             className="rounded-lg object-cover w-full max-w-sm md:max-w-none mx-auto md:mx-0"
             priority
           />
+
+          <div className="w-full max-w-sm md:max-w-none mx-auto md:mx-0 space-y-6">
+            <div className="flex gap-4 items-stretch">
+              <div className="w-40 flex-shrink-0">
+                <QuickTodos />
+              </div>
+              <div className="flex-1 flex">
+                <ActivityHeatmap />
+              </div>
+            </div>
+
+            <NowPlaying />
+          </div>
         </div>
       </div>
     </section>
