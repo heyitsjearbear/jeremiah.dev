@@ -3,6 +3,7 @@ import {HEATMAP_RANGE_DAYS, type TodoHeatmapItem, type TodoPriority} from '@/app
 export type HeatmapDay = {
   date: string
   count: number
+  score: number
   tasks: string[]
 }
 
@@ -22,7 +23,7 @@ export const buildHeatmapDays = (
   days = HEATMAP_RANGE_DAYS,
   today = new Date(),
 ): HeatmapDay[] => {
-  const totals = new Map<string, {count: number; tasks: string[]}>()
+  const totals = new Map<string, {count: number; score: number; tasks: string[]}>()
 
   for (const todo of todos) {
     const completedDate = new Date(todo.completedAt)
@@ -30,8 +31,9 @@ export const buildHeatmapDays = (
       continue
     }
     const dayKey = toUtcDayKey(completedDate)
-    const entry = totals.get(dayKey) ?? {count: 0, tasks: []}
-    entry.count += priorityWeights[todo.priority] ?? 1
+    const entry = totals.get(dayKey) ?? {count: 0, score: 0, tasks: []}
+    entry.count += 1
+    entry.score += priorityWeights[todo.priority] ?? 1
     entry.tasks.push(todo.title || 'Untitled task')
     totals.set(dayKey, entry)
   }
@@ -48,6 +50,7 @@ export const buildHeatmapDays = (
     results.push({
       date: dayKey,
       count: entry?.count ?? 0,
+      score: entry?.score ?? 0,
       tasks: entry?.tasks ?? [],
     })
   }

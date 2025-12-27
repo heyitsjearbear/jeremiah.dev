@@ -11,9 +11,10 @@ Decisions (locked)
 
 Relevant Codebase References
 - app/components/hero.tsx (renders Focus panel + heatmap layout)
-- app/components/quick-todos.tsx (Focus panel mock list)
-- app/components/activity-heatmap.tsx (heatmap mock data + tooltip UI)
+- app/components/quick-todos.tsx (Focus panel list)
+- app/components/activity-heatmap.tsx (heatmap UI + tooltip)
 - app/lib/sanity.ts (Sanity client + GROQ helpers)
+- app/lib/todo-heatmap.ts (heatmap aggregation helper)
 - studio-jeremiah.dev/schemaTypes/index.ts (schema registry)
 - studio-jeremiah.dev/schemaTypes/post.ts (schema pattern reference)
 
@@ -31,7 +32,7 @@ GROQ Queries (published only)
   - Completed: status == "done" order by completedAt desc [0..3]
 - Heatmap:
   - Completed todos in last 13 weeks (91 days):
-    completedAt >= dateTime(now()) - 90 * 24 * 60 * 60 * 1000 (inclusive window)
+    completedAt >= $heatmapStart (computed in JS as UTC midnight today - 90 days)
   - Map each todo to day key: date(completedAt)
   - Aggregate by day in frontend to compute weighted counts and tooltip task titles
 
@@ -71,13 +72,14 @@ User Experience & UI
 - Heatmap purpose: the heatmap remains a compact, ambient signal of output over
   time. It should feel cinematic and quiet, not analytical. Each cell represents
   the weighted total of completed tasks for that day (priority weight), so a single
-  high-priority completion can visibly move the scale.
+  high-priority completion can visibly move the scale. Tooltip counts should show
+  raw task totals, not weight.
 - Heatmap range and baseline: render exactly the last 13 weeks (91 days, rolling). Days outside
   this range are not shown. Days with zero completed tasks remain visible as the
   lowest intensity, maintaining the weekly rhythm and visual continuity.
 - Tooltip behavior: hover reveals the date, the list of completed task titles for
-  that day, and the weighted "contribution" count. The tooltip stays compact and
-  anchored near the hovered cell, matching the current interaction style.
+  that day, and the raw task count. The tooltip stays compact and anchored near the
+  hovered cell, matching the current interaction style.
 - Backdating behavior: if a task is edited with a past completedAt, the heatmap will
   reflect that historical date on the next page load. This keeps the timeline honest
   and prevents spikes from retroactive data entry. No special UI is required beyond
@@ -88,7 +90,8 @@ Aggregation Algorithm (frontend)
 - For each todo:
   - dayKey = completedAt (YYYY-MM-DD)
   - weight = priority map (low=1, medium=3, high=5)
-  - Increment day.total by weight
+  - Increment day.count by 1 (raw tasks)
+  - Increment day.score by weight (heatmap intensity)
   - Append title to day.tasks
 - Output: last 91 days list (fill empty days with zero count)
 
@@ -98,6 +101,7 @@ Implementation Steps
    - Register in studio-jeremiah.dev/schemaTypes/index.ts ✅
 2) Sanity helpers ✅
    - Update app/lib/sanity.ts with todo types + GROQ helpers ✅
+   - Pass a JS-computed ISO cutoff to the heatmap query ✅
 3) Focus panel ✅
    - Replace app/components/quick-todos.tsx mock list with Sanity data ✅
 4) Heatmap ✅
@@ -111,9 +115,9 @@ Implementation Steps
 Notes
 - Use ISO strings between server and client; parse dates in client for tooltip formatting.
 - Keep UI styling consistent with current dark-first palette and blue accents.
-- Updated GROQ date math to use milliseconds (day-based math) and documented alternative fixes.
+- Compute the heatmap cutoff date in JS and pass as a GROQ param to avoid date math pitfalls.
 
 Problems / Ambiguous Decisions
 - Resolved: switch to a 13-week (91-day) range so the grid aligns to full weeks without padding cells.
-- GROQ parser rejected the day-suffix syntax (`- 90d`), so we reverted to milliseconds math to keep the 91-day window accurate.
-- Alternatives (not chosen): use day suffixes if supported, use `duration("90d")`, or compute an ISO cutoff in JS and pass it into the GROQ query.
+- Resolved: heatmap query returned 0 rows when using inline date math; now pass a JS-computed ISO cutoff (`$heatmapStart`) to GROQ.
+- Alternatives (not chosen): use day suffixes if supported, use `duration("90d")`, or keep inline milliseconds math.

@@ -233,20 +233,31 @@ const todoFields = groq`{
   "createdAt": coalesce(createdAt, _createdAt)
 }`
 
-const focusIncompleteTodosQuery = groq`*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))] | order(createdAt asc) ${todoFields}`
+const focusIncompleteTodosQuery = groq`*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))] | order(createdAt desc)[0..4] ${todoFields}`
 
-const focusCompletedTodosQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && !(_id in path("drafts.**"))] | order(completedAt desc)[0..3] ${todoFields}`
+const focusCompletedTodosQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && !(_id in path("drafts.**"))] | order(completedAt desc)[0..4] ${todoFields}`
 
-const completedTodosForHeatmapQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && completedAt >= dateTime(now()) - ${HEATMAP_RANGE_DAYS - 1} * 24 * 60 * 60 * 1000 && !(_id in path("drafts.**"))] | order(completedAt asc){_id, title, priority, completedAt}`
+const focusIncompleteTodosCountQuery = groq`count(*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))])`
+
+const focusCompletedTodosCountQuery = groq`count(*[_type == "todo" && status == "done" && defined(completedAt) && !(_id in path("drafts.**"))])`
+
+const completedTodosForHeatmapQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && completedAt >= $heatmapStart && !(_id in path("drafts.**"))] | order(completedAt asc){_id, title, priority, completedAt}`
 
 export const getFocusTodos = async () => {
-  const [incomplete, completed] = await Promise.all([
+  const [incomplete, completed, incompleteCount, completedCount] = await Promise.all([
     sanityFetch<Todo[]>(focusIncompleteTodosQuery),
     sanityFetch<Todo[]>(focusCompletedTodosQuery),
+    sanityFetch<number>(focusIncompleteTodosCountQuery),
+    sanityFetch<number>(focusCompletedTodosCountQuery),
   ])
-  return {incomplete, completed}
+  return {incomplete, completed, incompleteCount, completedCount}
 }
 
 export const getCompletedTodosForHeatmap = async () => {
-  return sanityFetch<TodoHeatmapItem[]>(completedTodosForHeatmapQuery)
+  const now = new Date()
+  const heatmapStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  heatmapStart.setUTCDate(heatmapStart.getUTCDate() - (HEATMAP_RANGE_DAYS - 1))
+  return sanityFetch<TodoHeatmapItem[]>(completedTodosForHeatmapQuery, {
+    heatmapStart: heatmapStart.toISOString(),
+  })
 }

@@ -27,8 +27,9 @@ const child = spawn(
   process.platform === 'win32' ? 'npm.cmd' : 'npm',
   ['exec', 'sanity', 'dev', '--', '--port', '3333'],
   {
-  cwd: studioRoot,
+    cwd: studioRoot,
     stdio: 'inherit',
+    shell: true,
   },
 )
 

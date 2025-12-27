@@ -11,19 +11,19 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null)
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 })
 
-  const maxCount = days.reduce((max, day) => Math.max(max, day.count), 0)
+  const maxScore = days.reduce((max, day) => Math.max(max, day.score), 0)
 
-  const getIntensity = (count: number): number => {
-    if (count === 0 || maxCount === 0) return 0
-    const ratio = count / maxCount
+  const getIntensity = (score: number): number => {
+    if (score === 0 || maxScore === 0) return 0
+    const ratio = score / maxScore
     if (ratio <= 0.25) return 1
     if (ratio <= 0.5) return 2
     if (ratio <= 0.75) return 3
     return 4
   }
 
-  const getColor = (count: number): string => {
-    const intensity = getIntensity(count)
+  const getColor = (score: number): string => {
+    const intensity = getIntensity(score)
     if (intensity === 0) return 'bg-gray-800'
     if (intensity === 1) return 'bg-blue-900'
     if (intensity === 2) return 'bg-blue-700'
@@ -70,7 +70,7 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
                 {week.map((day) => (
                   <div
                     key={day.date}
-                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
+                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
                   />
@@ -126,7 +126,7 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
           )}
 
           <div className="mt-2 pt-2 border-t border-gray-800 text-[10px] text-gray-600">
-            {hoveredDay.count} {hoveredDay.count === 1 ? 'contribution' : 'contributions'}
+            {hoveredDay.count} {hoveredDay.count === 1 ? 'task' : 'tasks'}
           </div>
         </div>
       )}
