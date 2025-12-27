@@ -233,7 +233,7 @@ const todoFields = groq`{
   "createdAt": coalesce(createdAt, _createdAt)
 }`
 
-const focusIncompleteTodosQuery = groq`*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))] | order(createdAt desc)[0..4] ${todoFields}`
+const focusIncompleteTodosQuery = groq`*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))] | order(createdAt desc)[0..19] ${todoFields}`
 
 const focusCompletedTodosQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && !(_id in path("drafts.**"))] | order(completedAt desc)[0..4] ${todoFields}`
 
