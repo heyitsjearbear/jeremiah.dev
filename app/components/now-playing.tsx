@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 export default function NowPlaying() {
   const [progress, setProgress] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
+  const [isPlaying] = useState(true)
 
   // Mock song data
   const song = {

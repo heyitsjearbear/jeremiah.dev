@@ -1,77 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import {useState, type MouseEvent} from 'react'
+import type {HeatmapDay} from '@/app/lib/todo-heatmap'
 
-interface HeatmapDay {
-  date: Date
-  count: number
-  tasks: string[]
+type ActivityHeatmapProps = {
+  days: HeatmapDay[]
 }
 
-export default function ActivityHeatmap() {
+export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null)
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 })
 
-  // Mock tasks for different activity levels
-  const getTasksForCount = (count: number): string[] => {
-    const allTasks = [
-      'Pushed 3 commits to main',
-      'Merged PR #42',
-      'Fixed critical bug',
-      'Reviewed team PRs',
-      'Updated documentation',
-      'Deployed to production',
-      'Optimized API performance',
-      'Added new feature',
-      'Refactored authentication',
-      'Wrote unit tests',
-      'Updated dependencies',
-      'Fixed TypeScript errors',
-    ]
+  const maxCount = days.reduce((max, day) => Math.max(max, day.count), 0)
 
-    if (count === 0) return []
-
-    // Return random tasks based on count
-    const shuffled = [...allTasks].sort(() => Math.random() - 0.5)
-    return shuffled.slice(0, count)
+  const getIntensity = (count: number): number => {
+    if (count === 0 || maxCount === 0) return 0
+    const ratio = count / maxCount
+    if (ratio <= 0.25) return 1
+    if (ratio <= 0.5) return 2
+    if (ratio <= 0.75) return 3
+    return 4
   }
-
-  // Generate last 20 weeks of data (140 days) to fill more space
-  const generateHeatmapData = (): HeatmapDay[] => {
-    const data: HeatmapDay[] = []
-    const today = new Date()
-
-    for (let i = 139; i >= 0; i--) {
-      const date = new Date(today)
-      date.setDate(date.getDate() - i)
-      // Generate random activity data (0-4 scale)
-      const count = Math.floor(Math.random() * 5)
-      const tasks = getTasksForCount(count)
-      data.push({ date, count, tasks })
-    }
-
-    return data
-  }
-
-  const heatmapData = generateHeatmapData()
 
   const getColor = (count: number): string => {
-    if (count === 0) return 'bg-gray-800'
-    if (count === 1) return 'bg-blue-900'
-    if (count === 2) return 'bg-blue-700'
-    if (count === 3) return 'bg-blue-500'
+    const intensity = getIntensity(count)
+    if (intensity === 0) return 'bg-gray-800'
+    if (intensity === 1) return 'bg-blue-900'
+    if (intensity === 2) return 'bg-blue-700'
+    if (intensity === 3) return 'bg-blue-500'
     return 'bg-blue-400'
   }
 
   // Group days into weeks
   const weeks: HeatmapDay[][] = []
-  for (let i = 0; i < heatmapData.length; i += 7) {
-    weeks.push(heatmapData.slice(i, i + 7))
+  for (let i = 0; i < days.length; i += 7) {
+    weeks.push(days.slice(i, i + 7))
   }
 
-  const days = ['Mon', 'Wed', 'Fri']
+  const dayLabels = ['Mon', 'Wed', 'Fri']
 
-  const handleMouseEnter = (day: HeatmapDay, event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = (day: HeatmapDay, event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
     setModalPosition({ x: rect.left, y: rect.bottom })
     setHoveredDay(day)
@@ -88,7 +56,7 @@ export default function ActivityHeatmap() {
         <div className="flex gap-1 flex-1 min-h-0">
           {/* Day labels */}
           <div className="flex flex-col justify-around pr-1.5 flex-shrink-0">
-            {days.map((day, idx) => (
+            {dayLabels.map((day, idx) => (
               <div key={idx} className="text-[9px] text-gray-500 flex items-center">
                 {day}
               </div>
@@ -99,9 +67,9 @@ export default function ActivityHeatmap() {
           <div className="flex gap-0.5 flex-1 items-stretch overflow-hidden">
             {weeks.map((week, weekIdx) => (
               <div key={weekIdx} className="flex flex-col gap-0.5 flex-1 justify-between">
-                {week.map((day, dayIdx) => (
+                {week.map((day) => (
                   <div
-                    key={dayIdx}
+                    key={day.date}
                     className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
@@ -136,10 +104,11 @@ export default function ActivityHeatmap() {
           }}
         >
           <div className="text-xs font-medium text-gray-300 mb-2">
-            {hoveredDay.date.toLocaleDateString('en-US', {
+            {new Date(`${hoveredDay.date}T00:00:00Z`).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
-              year: 'numeric'
+              year: 'numeric',
+              timeZone: 'UTC',
             })}
           </div>
 

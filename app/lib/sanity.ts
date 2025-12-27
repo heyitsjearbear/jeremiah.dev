@@ -104,6 +104,27 @@ export type Post = BasePostFields & {
   }
 }
 
+export type TodoStatus = 'todo' | 'in_progress' | 'done'
+export type TodoPriority = 'low' | 'medium' | 'high'
+
+export type Todo = {
+  _id: string
+  title: string
+  status: TodoStatus
+  priority: TodoPriority
+  completedAt?: string | null
+  createdAt: string
+}
+
+export type TodoHeatmapItem = {
+  _id: string
+  title: string
+  priority: TodoPriority
+  completedAt: string
+}
+
+export const HEATMAP_RANGE_DAYS = 91
+
 const postFields = groq`{
   _id,
   _createdAt,
@@ -201,4 +222,31 @@ export const getPostForMetadata = async (
     }
     coverImage?: SanityImage | null
   } | null>(postMetadataQuery, {slug}, {preview})
+}
+
+const todoFields = groq`{
+  _id,
+  title,
+  status,
+  priority,
+  completedAt,
+  "createdAt": coalesce(createdAt, _createdAt)
+}`
+
+const focusIncompleteTodosQuery = groq`*[_type == "todo" && status != "done" && !(_id in path("drafts.**"))] | order(createdAt asc) ${todoFields}`
+
+const focusCompletedTodosQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && !(_id in path("drafts.**"))] | order(completedAt desc)[0..3] ${todoFields}`
+
+const completedTodosForHeatmapQuery = groq`*[_type == "todo" && status == "done" && defined(completedAt) && completedAt >= dateTime(now()) - ${HEATMAP_RANGE_DAYS - 1} * 24 * 60 * 60 * 1000 && !(_id in path("drafts.**"))] | order(completedAt asc){_id, title, priority, completedAt}`
+
+export const getFocusTodos = async () => {
+  const [incomplete, completed] = await Promise.all([
+    sanityFetch<Todo[]>(focusIncompleteTodosQuery),
+    sanityFetch<Todo[]>(focusCompletedTodosQuery),
+  ])
+  return {incomplete, completed}
+}
+
+export const getCompletedTodosForHeatmap = async () => {
+  return sanityFetch<TodoHeatmapItem[]>(completedTodosForHeatmapQuery)
 }

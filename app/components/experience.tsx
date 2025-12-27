@@ -11,10 +11,7 @@ export default function Experience() {
         {experience.map((item) => (
           <div
             key={item.alt}
-            className="relative w-24 h-24 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0 border-2 transition-colors"
-            style={{ borderColor: "rgb(96, 165, 250)" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgb(147, 197, 253)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgb(96, 165, 250)"; }}
+            className="relative w-24 h-24 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0 border-2 border-[rgb(96,165,250)] transition-colors hover:border-[rgb(147,197,253)]"
           >
             <Image
               src={item.src || "/placeholder.svg"}

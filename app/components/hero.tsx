@@ -3,8 +3,13 @@ import Link from "next/link"
 import ActivityHeatmap from "./activity-heatmap"
 import QuickTodos from "./quick-todos"
 import NowPlaying from "./now-playing"
+import {getCompletedTodosForHeatmap} from "@/app/lib/sanity"
+import {buildHeatmapDays} from "@/app/lib/todo-heatmap"
 
-export default function Hero() {
+export default async function Hero() {
+  const completedTodos = await getCompletedTodosForHeatmap()
+  const heatmapDays = buildHeatmapDays(completedTodos)
+
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
       <div className="flex flex-col md:flex-row md:gap-4 md:h-[560px]">
@@ -60,7 +65,7 @@ export default function Hero() {
               <QuickTodos />
             </div>
             <div className="flex-1 h-full">
-              <ActivityHeatmap />
+              <ActivityHeatmap days={heatmapDays} />
             </div>
           </div>
         </div>
