@@ -44,6 +44,12 @@ export const previewClient = createClient({
   perspective: 'drafts' as const,
 })
 
+const noCdnClient = createClient({
+  ...sharedConfig,
+  useCdn: false,
+  perspective: 'published' as const,
+})
+
 const builder = imageUrlBuilder({
   projectId,
   dataset,
@@ -57,6 +63,16 @@ export type SanityImage = {
   }
   alt?: string
   caption?: string
+}
+
+export type Song = {
+  _id: string
+  title: string
+  artist: string
+  album: string
+  duration: number
+  albumCover: SanityImage
+  spotifyUrl?: string
 }
 
 export type CodeBlockValue = {
@@ -75,6 +91,13 @@ export const urlForImage = (source: SanityImage | null | undefined) => {
     return null
   }
   return builder.image(source).auto('format').fit('max')
+}
+
+export const urlForNowPlayingImage = (source: SanityImage | null | undefined) => {
+  if (!source?.asset?._ref) {
+    return null
+  }
+  return builder.image(source).width(256).height(256).auto('format').fit('max')
 }
 
 type BasePostFields = {
@@ -151,6 +174,16 @@ const postDetailFields = groq`{
   seo
 }`
 
+const songFields = groq`{
+  _id,
+  title,
+  artist,
+  album,
+  duration,
+  albumCover,
+  spotifyUrl
+}`
+
 type SanityFetchOptions = {
   preview?: boolean
   revalidate?: number
@@ -222,6 +255,25 @@ export const getPostForMetadata = async (
     }
     coverImage?: SanityImage | null
   } | null>(postMetadataQuery, {slug}, {preview})
+}
+
+const shuffleArray = <T,>(items: T[]) => {
+  const shuffled = [...items]
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+const randomSongsQuery = groq`*[_type == "song"] ${songFields}`
+
+export const getRandomSongs = async (count = 10) => {
+  const songs = await noCdnClient.fetch<Song[]>(randomSongsQuery, {}, {cache: 'no-store'})
+  if (!songs.length) {
+    return []
+  }
+  return shuffleArray(songs).slice(0, count)
 }
 
 const todoFields = groq`{
