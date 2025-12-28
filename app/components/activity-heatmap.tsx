@@ -39,9 +39,17 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
 
   const dayLabels = ['Mon', 'Wed', 'Fri']
 
+  const clampModalLeft = (preferredLeft: number) => {
+    if (typeof window === 'undefined') return preferredLeft
+    const modalWidth = 280
+    const padding = 12
+    const maxLeft = window.innerWidth - modalWidth - padding
+    return Math.min(Math.max(preferredLeft, padding), Math.max(padding, maxLeft))
+  }
+
   const handleMouseEnter = (day: HeatmapDay, event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
-    setModalPosition({ x: rect.left, y: rect.bottom })
+    setModalPosition({ x: clampModalLeft(rect.left), y: rect.bottom })
     setHoveredDay(day)
   }
 
@@ -97,10 +105,11 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
       {/* Modal */}
       {hoveredDay && (
         <div
-          className="fixed z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl p-3 min-w-[200px] max-w-[280px]"
+          className="fixed z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl p-3"
           style={{
             left: `${modalPosition.x}px`,
             top: `${modalPosition.y + 8}px`,
+            width: 'min(280px, calc(100vw - 24px))',
           }}
         >
           <div className="text-xs font-medium text-gray-300 mb-2">
