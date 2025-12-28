@@ -1,5 +1,6 @@
 import Header from "./components/header";
-import Hero from "./components/hero";
+import HeroText from "./components/HeroText";
+import HeroWidgets from "./components/HeroWidgets";
 import TechStack from "./components/tech-stack";
 import Experience from "./components/experience";
 import Footer from "./components/footer";
@@ -9,7 +10,8 @@ export default function Home() {
   return (
     <HomeShell>
       <Header />
-      <Hero />
+      <HeroText />
+      <HeroWidgets />
       <TechStack />
       <Experience />
       <Footer />

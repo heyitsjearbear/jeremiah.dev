@@ -1,8 +1,9 @@
 import Image from "next/image"
-import Link from "next/link"
 import ActivityHeatmap from "./activity-heatmap"
 import QuickTodos from "./quick-todos"
 import NowPlaying from "./now-playing"
+import TypewriterText from "./typewriter-text"
+import MagneticButton from "./magnetic-button"
 import {getCompletedTodosForHeatmap} from "@/app/lib/sanity"
 import {buildHeatmapDays} from "@/app/lib/todo-heatmap"
 
@@ -16,7 +17,10 @@ export default async function Hero() {
         {/* Left column */}
         <div className="md:col-start-1 md:row-start-1 flex flex-col gap-3 md:h-full">
           <div className="font-mono text-xs md:text-sm" style={{ color: "rgb(96, 165, 250)" }}>
-            {'// student founder – systems + ai + dev'}
+            <TypewriterText
+              text="// student founder – systems + ai + dev"
+              speed={40}
+            />
           </div>
 
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
@@ -28,20 +32,20 @@ export default async function Hero() {
           </p>
 
           <div className="flex gap-2 md:gap-3">
-            <a
+            <MagneticButton
               href="https://zenergy-ai.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer bg-blue-400 hover:bg-blue-500 text-sm"
+              className="text-white px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer bg-blue-400 hover:bg-blue-500 text-sm inline-block"
             >
               View Zenergy
-            </a>
-            <Link
+            </MagneticButton>
+            <MagneticButton
               href="/projects"
-              className="border border-gray-600 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer text-gray-200 hover:border-blue-400 hover:text-blue-400 text-sm"
+              className="border border-gray-600 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer text-gray-200 hover:border-blue-400 hover:text-blue-400 text-sm inline-block"
             >
               See Projects
-            </Link>
+            </MagneticButton>
           </div>
         </div>
 
