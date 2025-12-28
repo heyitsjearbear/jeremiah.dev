@@ -3,12 +3,11 @@
 import {useState, type MouseEvent} from 'react'
 
 type TodoItemProps = {
-  id: string
   title: string
   isCompleted: boolean
 }
 
-export default function TodoItem({id, title, isCompleted}: TodoItemProps) {
+export default function TodoItem({title, isCompleted}: TodoItemProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0})
 

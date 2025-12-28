@@ -2,6 +2,7 @@ import {createClient, type QueryParams} from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
 import groq from 'groq'
 import type {PortableTextBlock} from '@portabletext/types'
+import {siteConfig} from '@/app/config/site'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -307,7 +308,18 @@ export const getFocusTodos = async () => {
 
 export const getCompletedTodosForHeatmap = async () => {
   const now = new Date()
-  const heatmapStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  const timeZone = siteConfig.timeZone ?? 'UTC'
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+  const dayKey = formatter.format(now)
+  const safeDayKey = /^\d{4}-\d{2}-\d{2}$/.test(dayKey)
+    ? dayKey
+    : now.toISOString().slice(0, 10)
+  const heatmapStart = new Date(`${safeDayKey}T00:00:00Z`)
   heatmapStart.setUTCDate(heatmapStart.getUTCDate() - (HEATMAP_RANGE_DAYS - 1))
   return sanityFetch<TodoHeatmapItem[]>(completedTodosForHeatmapQuery, {
     heatmapStart: heatmapStart.toISOString(),

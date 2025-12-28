@@ -5,6 +5,7 @@ import {useEffect, useMemo, useState} from 'react'
 
 import {formatSecondsToTime} from '@/app/lib/utils'
 import {urlForNowPlayingImage, type Song} from '@/app/lib/sanity'
+import {useIntro} from '@/app/components/providers/intro-context'
 
 type NowPlayingSong = Omit<Song, 'albumCover'> & {
   albumCover?: Song['albumCover'] | null
@@ -45,12 +46,13 @@ export default function NowPlayingClient({
     () => (initialSongs && initialSongs.length > 0 ? initialSongs : fallbackSongs),
     [initialSongs],
   )
+  const {introComplete} = useIntro()
   const hasSanitySongs = (initialSongs?.length ?? 0) > 0
   const [playback, setPlayback] = useState({
     currentSongIndex: 0,
     progress: 0,
   })
-  const [isPlaying, setIsPlaying] = useState(false)
+  const isPlaying = introComplete
 
   const safeIndex = songs.length
     ? playback.currentSongIndex % songs.length
@@ -59,10 +61,6 @@ export default function NowPlayingClient({
   const duration = Math.max(currentSong.duration, 1)
   const currentSeconds = Math.floor((playback.progress / 100) * duration)
   const remainingSeconds = Math.max(duration - currentSeconds, 0)
-
-  useEffect(() => {
-    setIsPlaying(true)
-  }, [])
 
   useEffect(() => {
     if (!songs.length) {

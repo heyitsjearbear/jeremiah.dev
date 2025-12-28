@@ -11,25 +11,25 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null)
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 })
 
-  const maxScore = days.reduce((max, day) => Math.max(max, day.score), 0)
-
-  const getIntensity = (score: number): number => {
-    if (score === 0 || maxScore === 0) return 0
-    const ratio = score / maxScore
-    if (ratio <= 0.25) return 1
-    if (ratio <= 0.5) return 2
-    if (ratio <= 0.75) return 3
+  const getIntensity = (score: number, count: number): number => {
+    const composite = score + count
+    if (composite <= 0) return 0
+    if (composite <= 2) return 1
+    if (composite <= 4) return 2
+    if (composite <= 7) return 3
     return 4
   }
 
-  const getColor = (score: number): string => {
-    const intensity = getIntensity(score)
-    if (intensity === 0) return 'bg-gray-800'
-    if (intensity === 1) return 'bg-blue-900'
-    if (intensity === 2) return 'bg-blue-700'
-    if (intensity === 3) return 'bg-blue-500'
-    return 'bg-blue-400'
+  const getColorForIntensity = (intensity: number): string => {
+    if (intensity <= 0) return 'bg-gray-800'
+    if (intensity === 1) return 'bg-[rgb(30,64,175)]'
+    if (intensity === 2) return 'bg-[rgb(37,99,235)]'
+    if (intensity === 3) return 'bg-[rgb(59,130,246)]'
+    return 'bg-[rgb(147,197,253)]'
   }
+
+  const getColor = (score: number, count: number): string =>
+    getColorForIntensity(getIntensity(score, count))
 
   // Group days into weeks
   const weeks: HeatmapDay[][] = []
@@ -70,7 +70,7 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
                 {week.map((day) => (
                   <div
                     key={day.date}
-                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
+                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score, day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
                   />
@@ -86,7 +86,7 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
             {[0, 1, 2, 3, 4].map((level) => (
               <div
                 key={level}
-                className={`w-2.5 h-2.5 rounded-[2px] ${getColor(level)}`}
+                className={`w-2.5 h-2.5 rounded-[2px] ${getColorForIntensity(level)}`}
               />
             ))}
           </div>

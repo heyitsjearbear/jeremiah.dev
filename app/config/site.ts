@@ -19,6 +19,7 @@ export const siteConfig = {
   name: "jeremiah.dev",
   title: "Jeremiah Ramiscal",
   description: "Student founder building tools for focus, clarity, and impact.",
+  timeZone: "America/Los_Angeles",
 }
 
 export const navigation: NavLink[] = [

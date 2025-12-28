@@ -21,7 +21,7 @@ export default async function QuickTodos() {
             </div>
           )}
           {incomplete.map((todo) => (
-            <TodoItem key={todo._id} id={todo._id} title={todo.title} isCompleted={false} />
+            <TodoItem key={todo._id} title={todo.title} isCompleted={false} />
           ))}
           {hasCompleted && (
             <div className="text-[9px] uppercase tracking-[0.2em] text-gray-500">
@@ -29,7 +29,7 @@ export default async function QuickTodos() {
             </div>
           )}
           {completed.map((todo) => (
-            <TodoItem key={todo._id} id={todo._id} title={todo.title} isCompleted={true} />
+            <TodoItem key={todo._id} title={todo.title} isCompleted={true} />
           ))}
         </div>
 
