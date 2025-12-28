@@ -45,12 +45,6 @@ export const previewClient = createClient({
   perspective: 'drafts' as const,
 })
 
-const noCdnClient = createClient({
-  ...sharedConfig,
-  useCdn: false,
-  perspective: 'published' as const,
-})
-
 const builder = imageUrlBuilder({
   projectId,
   dataset,
@@ -270,7 +264,7 @@ const shuffleArray = <T,>(items: T[]) => {
 const randomSongsQuery = groq`*[_type == "song"] ${songFields}`
 
 export const getRandomSongs = async (count = 10) => {
-  const songs = await noCdnClient.fetch<Song[]>(randomSongsQuery, {}, {cache: 'no-store'})
+  const songs = await sanityFetch<Song[]>(randomSongsQuery, {}, {revalidate: 60})
   if (!songs.length) {
     return []
   }
