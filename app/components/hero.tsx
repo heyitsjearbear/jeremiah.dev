@@ -12,9 +12,9 @@ export default async function Hero() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
-      <div className="flex flex-col md:flex-row md:gap-4 md:h-[560px]">
+      <div className="grid grid-cols-1 gap-6 md:gap-4 md:grid-cols-[42%_1fr] md:grid-rows-[1fr_auto] md:h-[560px]">
         {/* Left column */}
-        <div className="md:w-[42%] md:flex-shrink-0 mb-6 md:mb-0 flex flex-col gap-3 md:h-full">
+        <div className="md:col-start-1 md:row-start-1 flex flex-col gap-3 md:h-full">
           <div className="font-mono text-xs md:text-sm" style={{ color: "rgb(96, 165, 250)" }}>
             {'// student founder – systems + ai + dev'}
           </div>
@@ -43,14 +43,10 @@ export default async function Hero() {
               See Projects
             </Link>
           </div>
-
-          <div className="flex-1 flex flex-col justify-end">
-            <NowPlaying />
-          </div>
         </div>
 
         {/* Right column */}
-        <div className="md:flex-1 mt-6 md:mt-0 flex flex-col gap-3 md:h-full overflow-hidden">
+        <div className="md:col-start-2 md:row-start-1 md:row-span-2 flex flex-col gap-3 md:h-full overflow-hidden">
           <Image
             src="/jeremiah-headshot.jpg"
             alt="Jeremiah"
@@ -68,6 +64,10 @@ export default async function Hero() {
               <ActivityHeatmap days={heatmapDays} />
             </div>
           </div>
+        </div>
+
+        <div className="md:col-start-1 md:row-start-2">
+          <NowPlaying />
         </div>
       </div>
     </section>
