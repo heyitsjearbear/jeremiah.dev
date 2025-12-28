@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, type MouseEvent} from 'react'
+import {useEffect, useRef, useState, type MouseEvent} from 'react'
 import type {HeatmapDay} from '@/app/lib/todo-heatmap'
 
 type ActivityHeatmapProps = {
@@ -10,6 +10,8 @@ type ActivityHeatmapProps = {
 export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null)
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 })
+  const [selectedDayDate, setSelectedDayDate] = useState<string | null>(null)
+  const heatmapRef = useRef<HTMLDivElement | null>(null)
 
   const getIntensity = (score: number, count: number): number => {
     const composite = score + count
@@ -57,10 +59,33 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
     setHoveredDay(null)
   }
 
+  const handleClick = (day: HeatmapDay, event: MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    setModalPosition({ x: clampModalLeft(rect.left), y: rect.bottom })
+    setHoveredDay(day)
+    setSelectedDayDate((prev) => (prev === day.date ? null : day.date))
+  }
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!heatmapRef.current) return
+      if (!heatmapRef.current.contains(event.target as Node)) {
+        setHoveredDay(null)
+        setSelectedDayDate(null)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [])
+
   return (
     <div className="w-full h-full flex flex-col">
       <h3 className="text-sm font-medium text-gray-300 mb-1.5 flex-shrink-0">Locked In</h3>
-      <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 relative flex-1 flex flex-col min-h-0">
+      <div
+        ref={heatmapRef}
+        className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 relative flex-1 flex flex-col min-h-0"
+      >
         <div className="flex gap-1 flex-1 min-h-0">
           {/* Day labels */}
           <div className="flex flex-col justify-around pr-1.5 flex-shrink-0">
@@ -75,14 +100,20 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
           <div className="flex gap-0.5 flex-1 items-stretch overflow-hidden">
             {weeks.map((week, weekIdx) => (
               <div key={weekIdx} className="flex flex-col gap-0.5 flex-1 justify-between">
-                {week.map((day) => (
+                {week.map((day) => {
+                  const isSelected = selectedDayDate === day.date
+                  return (
                   <div
                     key={day.date}
-                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score, day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer`}
+                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score, day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer ${isSelected ? 'ring-1 ring-blue-400' : ''}`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
+                    onClick={(e) => handleClick(day, e)}
+                    aria-pressed={isSelected}
+                    role="button"
                   />
-                ))}
+                  )
+                })}
               </div>
             ))}
           </div>

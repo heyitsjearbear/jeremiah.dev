@@ -151,7 +151,7 @@ export default function NowPlayingClient({
                   <button
                     type="button"
                     onClick={handleSkip}
-                    className="text-[10px] font-mono text-gray-400 hover:text-blue-400 transition-colors"
+                    className="text-xs font-mono font-semibold text-blue-100 bg-blue-500/25 border border-blue-400/40 rounded-md px-2.5 py-1 hover:text-blue-400 hover:border-blue-400/70 transition-colors cursor-pointer"
                     aria-label="Skip to next song"
                     title="Skip to next song"
                   >
