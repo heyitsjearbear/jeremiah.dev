@@ -5,7 +5,7 @@ import { NavLinkComponent } from './ui/nav-link'
 
 export default function Header() {
   return (
-    <header className="border-b border-gray-700">
+    <header className="sticky top-0 z-50 border-b border-gray-700 bg-gray-900/60 backdrop-blur-md">
       <nav className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 flex items-center justify-between">
         <Link
           href="/"

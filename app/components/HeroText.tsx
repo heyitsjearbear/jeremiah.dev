@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import TypewriterText from './typewriter-text'
 import MagneticButton from './magnetic-button'
 import { useIntro } from './providers/intro-context'
+import TerminalReveal from './TerminalReveal'
 
 export default function HeroText() {
   const { introComplete } = useIntro()
@@ -13,7 +14,12 @@ export default function HeroText() {
 
   return (
     <section className="min-h-[calc(100vh_-_var(--header-height))] flex items-center justify-center px-4 md:px-6">
-      <div className="max-w-5xl mx-auto text-center flex flex-col gap-6">
+      <TerminalReveal
+        threshold={0.3}
+        once={false}
+        className="max-w-5xl mx-auto text-center"
+      >
+        <div className="flex flex-col gap-6">
         {/* Comment line */}
         <div className="font-mono text-sm md:text-base" style={{ color: "rgb(96, 165, 250)" }}>
           <TypewriterText
@@ -70,7 +76,8 @@ export default function HeroText() {
             </MagneticButton>
           </div>
         </motion.div>
-      </div>
+        </div>
+      </TerminalReveal>
     </section>
   )
 }

@@ -12,7 +12,7 @@ export default async function HeroWidgets() {
 
   return (
     <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-4">
         {/* Headshot */}
         <TerminalReveal delay={0} className="md:col-span-2 lg:col-span-2">
           <Image
@@ -25,14 +25,14 @@ export default async function HeroWidgets() {
         </TerminalReveal>
 
         {/* Quick Todos */}
-        <TerminalReveal delay={0.2} className="h-[200px] md:h-[320px]">
+        <TerminalReveal delay={0.2} className="h-[280px] md:h-[320px]">
           <div className="h-full">
             <QuickTodos />
           </div>
         </TerminalReveal>
 
         {/* Activity Heatmap */}
-        <TerminalReveal delay={0.4} className="h-[200px] md:h-[320px]">
+        <TerminalReveal delay={0.4} className="h-[280px] md:h-[320px]">
           <div className="h-full">
             <ActivityHeatmap days={heatmapDays} />
           </div>

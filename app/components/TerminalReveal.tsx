@@ -52,6 +52,7 @@ export default function TerminalReveal({
         animate={isInView ? 'visible' : 'hidden'}
         variants={variants}
         custom={revealDelay}
+        style={{ height: '100%' }}
       >
         {children}
       </motion.div>

@@ -86,9 +86,9 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
         ref={heatmapRef}
         className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 relative flex-1 flex flex-col min-h-0"
       >
-        <div className="flex gap-1 flex-1 min-h-0">
+        <div className="flex gap-1 flex-1 min-h-0 h-full">
           {/* Day labels */}
-          <div className="flex flex-col justify-around pr-1.5 flex-shrink-0">
+          <div className="flex flex-col justify-between pr-1.5 flex-shrink-0 h-full">
             {dayLabels.map((day, idx) => (
               <div key={idx} className="text-[9px] text-gray-500 flex items-center">
                 {day}
@@ -97,15 +97,15 @@ export default function ActivityHeatmap({days}: ActivityHeatmapProps) {
           </div>
 
           {/* Heatmap grid */}
-          <div className="flex gap-0.5 flex-1 items-stretch overflow-hidden">
+          <div className="flex gap-0.5 flex-1 items-stretch overflow-hidden h-full">
             {weeks.map((week, weekIdx) => (
-              <div key={weekIdx} className="flex flex-col gap-0.5 flex-1 justify-between">
+              <div key={weekIdx} className="flex flex-col gap-0.5 flex-1 h-full">
                 {week.map((day) => {
                   const isSelected = selectedDayDate === day.date
                   return (
                   <div
                     key={day.date}
-                    className={`w-full flex-1 min-h-[10px] max-h-[18px] rounded-[2px] ${getColor(day.score, day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer ${isSelected ? 'ring-1 ring-blue-400' : ''}`}
+                    className={`w-full flex-1 min-h-[10px] rounded-[2px] ${getColor(day.score, day.count)} transition-colors hover:ring-1 hover:ring-blue-400 cursor-pointer ${isSelected ? 'ring-1 ring-blue-400' : ''}`}
                     onMouseEnter={(e) => handleMouseEnter(day, e)}
                     onMouseLeave={handleMouseLeave}
                     onClick={(e) => handleClick(day, e)}
