@@ -1,6 +1,5 @@
 import {defineCliConfig} from 'sanity/cli'
 import {config} from 'dotenv'
-import process from 'node:process'
 
 config()
 
