@@ -1,5 +1,8 @@
 import {defineCliConfig} from 'sanity/cli'
+import {config} from 'dotenv'
 import process from 'node:process'
+
+config()
 
 const projectId =
   process.env.SANITY_STUDIO_PROJECT_ID ||
