@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, MouseEvent, ReactNode } from 'react'
+import { useRef, MouseEvent, ReactNode, useState, useEffect } from 'react'
 
 interface MagneticButtonProps {
   children: ReactNode
@@ -18,8 +18,31 @@ export default function MagneticButton({
   rel,
 }: MagneticButtonProps) {
   const btnRef = useRef<HTMLAnchorElement>(null)
+  // Initialize as false to avoid hydration mismatch - sync in useEffect
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    // Sync initial value on mount
+    setPrefersReducedMotion(mediaQuery.matches)
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches)
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   const handleMouseMove = (e: MouseEvent<HTMLAnchorElement>) => {
+    // Skip magnetic effect if user prefers reduced motion or on touch devices
+    if (
+      prefersReducedMotion ||
+      !window.matchMedia('(pointer: fine)').matches
+    ) {
+      return
+    }
+
     const btn = btnRef.current
     if (!btn) return
 
