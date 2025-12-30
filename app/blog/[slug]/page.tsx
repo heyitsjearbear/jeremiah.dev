@@ -1,8 +1,7 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import type {Metadata} from 'next'
-import {ArrowLeft, PlayCircle} from 'lucide-react'
+import {ArrowLeft} from 'lucide-react'
 import {BlogPortableText} from '../_components/portable-text'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
@@ -14,6 +13,8 @@ import {
   type CodeBlockValue,
   type Post,
 } from '@/app/lib/sanity'
+import {getYouTubeId, getYouTubeWatchUrl} from '@/app/lib/youtube'
+import {YouTubeThumbnail} from '../_components/youtube-thumbnail'
 import {draftMode} from 'next/headers'
 
 type PageParams = {
@@ -100,41 +101,6 @@ const estimateReadingMinutes = (post: Post) => {
   return Math.max(1, Math.round(words / 200))
 }
 
-const getYouTubeId = (youtubeUrl?: string | null) => {
-  if (!youtubeUrl) {
-    return null
-  }
-  try {
-    const parsed = new URL(youtubeUrl)
-    const host = parsed.hostname.replace(/^www\./, '')
-
-    if (host === 'youtu.be') {
-      return parsed.pathname.slice(1)
-    }
-
-    if (host === 'youtube.com') {
-      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/)
-      if (shortsMatch?.[1]) {
-        return shortsMatch[1]
-      }
-
-      const embedMatch = parsed.pathname.match(/^\/embed\/([^/]+)/)
-      if (embedMatch?.[1]) {
-        return embedMatch[1]
-      }
-
-      const videoId = parsed.searchParams.get('v')
-      if (videoId) {
-        return videoId
-      }
-    }
-
-    return null
-  } catch {
-    return null
-  }
-}
-
 export default async function BlogPostPage({params}: PageParams) {
   const {slug} = await params
   const draft = await draftMode()
@@ -148,15 +114,8 @@ export default async function BlogPostPage({params}: PageParams) {
   const readingMinutes = estimateReadingMinutes(post)
   const publishedDate = post.publishedAt ? dateFormatter.format(new Date(post.publishedAt)) : null
   const youtubeId = getYouTubeId(post.youtubeUrl)
-  const youtubeThumbnailUrl = youtubeId
-    ? `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`
-    : null
-  const youtubeWatchUrl =
-    youtubeId && (post.youtubeUrl?.includes('youtube.com') || post.youtubeUrl?.includes('youtu.be'))
-      ? post.youtubeUrl
-      : youtubeId
-        ? `https://www.youtube.com/watch?v=${youtubeId}`
-        : null
+  // Always use normalized watch URL for consistent UX (shorts/embed URLs have different interfaces)
+  const youtubeWatchUrl = youtubeId ? getYouTubeWatchUrl(youtubeId) : null
 
   return (
     <main className="flex min-h-screen flex-col bg-gray-800 text-white">
@@ -203,27 +162,8 @@ export default async function BlogPostPage({params}: PageParams) {
             </div>
           </header>
 
-          {youtubeId && youtubeThumbnailUrl && youtubeWatchUrl ? (
-            <Link
-              href={youtubeWatchUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative block overflow-hidden rounded-3xl border border-sky-500/40 bg-gray-900/70 shadow-lg shadow-sky-500/10 transition hover:border-sky-400/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/70"
-            >
-              <Image
-                src={youtubeThumbnailUrl}
-                alt={`YouTube video for ${post.title}`}
-                width={1600}
-                height={900}
-                className="h-auto w-full object-cover transition group-hover:scale-[1.01]"
-              />
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="rounded-full border border-white/50 bg-black/40 p-4 text-white shadow-lg transition group-hover:border-sky-200 group-hover:text-sky-200">
-                  <PlayCircle className="h-12 w-12" />
-                </div>
-              </div>
-              <span className="sr-only">Open featured video on YouTube</span>
-            </Link>
+          {youtubeId && youtubeWatchUrl ? (
+            <YouTubeThumbnail videoId={youtubeId} watchUrl={youtubeWatchUrl} title={post.title} />
           ) : null}
 
           <BlogPortableText value={post.body} className="text-base" />

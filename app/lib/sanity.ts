@@ -213,10 +213,29 @@ async function sanityFetch<T>(
 
 const publishedPostsQuery = groq`*[_type == "post" && defined(slug.current) && publishedAt <= now() && !(_id in path("drafts.**"))] | order(publishedAt desc) ${postFields}`
 
-const previewPostsQuery = groq`*[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))] | order(coalesce(publishedAt, _updatedAt) desc) ${postFields}`
+const previewPostsQuery = groq`*[_type == "post" && defined(slug.current)] | order(coalesce(publishedAt, _updatedAt) desc) ${postFields}`
 
 export const getPublishedPosts = async ({preview = false}: {preview?: boolean} = {}) => {
   const query = preview ? previewPostsQuery : publishedPostsQuery
+  return sanityFetch<PostCard[]>(query, {}, {preview})
+}
+
+const postsWithVideosQuery = groq`*[
+  _type == "post"
+  && defined(slug.current)
+  && defined(youtubeUrl)
+  && publishedAt <= now()
+  && !(_id in path("drafts.**"))
+] | order(publishedAt desc) ${postFields}`
+
+const previewPostsWithVideosQuery = groq`*[
+  _type == "post"
+  && defined(slug.current)
+  && defined(youtubeUrl)
+] | order(coalesce(publishedAt, _updatedAt) desc) ${postFields}`
+
+export const getPostsWithVideos = async ({preview = false}: {preview?: boolean} = {}) => {
+  const query = preview ? previewPostsWithVideosQuery : postsWithVideosQuery
   return sanityFetch<PostCard[]>(query, {}, {preview})
 }
 

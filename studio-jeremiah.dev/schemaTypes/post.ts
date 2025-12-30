@@ -115,9 +115,20 @@ export default defineType({
               return true
             }
             try {
-              const {hostname} = new URL(value)
-              const allowedHosts = ['youtube.com', 'www.youtube.com', 'youtu.be']
-              return allowedHosts.includes(hostname) || 'Use a valid YouTube URL.'
+              const parsed = new URL(value)
+              const hostname = parsed.hostname.replace(/^www\./, '')
+              const allowedHosts = ['youtube.com', 'youtu.be']
+
+              if (!allowedHosts.includes(hostname)) {
+                return 'Use a valid YouTube URL.'
+              }
+
+              // Reject playlist URLs
+              if (parsed.pathname.includes('/playlist') || parsed.searchParams.has('list')) {
+                return 'Playlists are not supported. Use an individual video URL.'
+              }
+
+              return true
             } catch {
               return 'Enter a valid URL.'
             }
