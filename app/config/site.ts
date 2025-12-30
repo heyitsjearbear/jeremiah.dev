@@ -26,7 +26,6 @@ export const navigation: NavLink[] = [
   { label: "Projects", href: "/projects" },
   { label: "Blog", href: "/blog" },
   { label: "Videos", href: "/videos" },
-  { label: "Resume", href: "/resume" },
 ]
 
 export const socialLinks: SocialLink[] = [
