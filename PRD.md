@@ -9,7 +9,6 @@
 | **/projects/zenergy** | Deep dive w/ architecture, commits, repo activity |
 | **/blog** | Pull long-form posts from Sanity (live preview + ISR) |
 | **/videos** | Pull YouTube dev videos / playlists |
-| **/resume** | PDF download + inline version |
 | **/contact** | Simple contact info + social links |
 
 Optional future pages:
@@ -154,7 +153,6 @@ export default function Home() {
             <a href="/projects">Projects</a>
             <a href="/blog">Blog</a>
             <a href="/videos">Videos</a>
-            <a href="/resume">Resume</a>
           </div>
         </nav>
 
@@ -245,13 +243,6 @@ Content ideas:
 
 ---
 
-# 📄 **Resume Page**
-
-- Inline PDF viewer (or styled résumé)
-- Download button
-
----
-
 # ✉️ **Contact Page**
 
 - Email link
@@ -287,7 +278,6 @@ Content ideas:
 	  /zenergy
   /blog
   /videos
-  /resume
   /contact
 /components
   navbar, footer, cards, heatmap, commit-feed
