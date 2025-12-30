@@ -27,7 +27,8 @@ export const getYouTubeId = (url?: string | null): string | null => {
     }
 
     if (host === 'youtu.be') {
-      const id = parsed.pathname.slice(1)
+      // Extract ID and strip trailing slashes
+      const id = parsed.pathname.slice(1).replace(/\/$/, '')
       return id || null
     }
 
@@ -59,10 +60,20 @@ export const getYouTubeId = (url?: string | null): string | null => {
 
 /**
  * Generates YouTube thumbnail URL for a given video ID.
- * Uses maxresdefault.jpg for highest quality.
+ * Uses maxresdefault.jpg for highest quality (1280x720).
+ * Note: maxresdefault.jpg may not exist for older videos or some shorts.
+ * Use getYouTubeThumbnailFallbackUrl for a guaranteed fallback.
  */
 export const getYouTubeThumbnailUrl = (videoId: string): string => {
   return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+}
+
+/**
+ * Generates fallback YouTube thumbnail URL (hqdefault.jpg, 480x360).
+ * This resolution is guaranteed to exist for all YouTube videos.
+ */
+export const getYouTubeThumbnailFallbackUrl = (videoId: string): string => {
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
 }
 
 /**

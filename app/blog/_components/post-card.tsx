@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {urlForImage, type PostCard as SanityPostCard} from '@/app/lib/sanity'
+import {getYouTubeId, getYouTubeThumbnailFallbackUrl} from '@/app/lib/youtube'
 import {cn} from '@/app/lib/utils'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -8,41 +9,6 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   year: 'numeric',
 })
-
-const getYouTubeId = (youtubeUrl?: string | null) => {
-  if (!youtubeUrl) {
-    return null
-  }
-  try {
-    const parsed = new URL(youtubeUrl)
-    const host = parsed.hostname.replace(/^www\./, '')
-
-    if (host === 'youtu.be') {
-      return parsed.pathname.slice(1)
-    }
-
-    if (host === 'youtube.com') {
-      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/)
-      if (shortsMatch?.[1]) {
-        return shortsMatch[1]
-      }
-
-      const embedMatch = parsed.pathname.match(/^\/embed\/([^/]+)/)
-      if (embedMatch?.[1]) {
-        return embedMatch[1]
-      }
-
-      const videoId = parsed.searchParams.get('v')
-      if (videoId) {
-        return videoId
-      }
-    }
-
-    return null
-  } catch {
-    return null
-  }
-}
 
 type PostCardProps = {
   post: SanityPostCard
@@ -52,9 +18,8 @@ type PostCardProps = {
 export function PostCard({post, className}: PostCardProps) {
   const imageUrl = urlForImage(post.coverImage)?.width(960).height(540).quality(85).url()
   const youtubeId = getYouTubeId(post.youtubeUrl)
-  const youtubeThumbnailUrl = youtubeId
-    ? `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`
-    : null
+  // Use hqdefault for fallback (guaranteed to exist) since this is a server component
+  const youtubeThumbnailUrl = youtubeId ? getYouTubeThumbnailFallbackUrl(youtubeId) : null
   const fallbackImageUrl = imageUrl || youtubeThumbnailUrl
   const href = `/blog/${post.slug.current}`
   const formattedPublishedAt = post.publishedAt

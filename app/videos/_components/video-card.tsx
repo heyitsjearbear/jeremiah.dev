@@ -1,8 +1,11 @@
+'use client'
+
+import {useState} from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {PlayCircle} from 'lucide-react'
-import {type PostCard as SanityPostCard} from '@/app/lib/sanity'
-import {getYouTubeId, getYouTubeThumbnailUrl} from '@/app/lib/youtube'
+import {urlForImage, type PostCard as SanityPostCard} from '@/app/lib/sanity'
+import {getYouTubeId, getYouTubeThumbnailUrl, getYouTubeThumbnailFallbackUrl} from '@/app/lib/youtube'
 import {cn} from '@/app/lib/utils'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -18,12 +21,33 @@ type VideoCardProps = {
 
 export function VideoCard({post, className}: VideoCardProps) {
   const videoId = getYouTubeId(post.youtubeUrl)
+  const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [hasError, setHasError] = useState(false)
 
   if (!videoId) {
     return null
   }
 
-  const youtubeThumbnailUrl = getYouTubeThumbnailUrl(videoId)
+  const maxresThumbnail = getYouTubeThumbnailUrl(videoId)
+  const hqThumbnail = getYouTubeThumbnailFallbackUrl(videoId)
+  const coverImageUrl = urlForImage(post.coverImage)?.width(960).height(540).quality(85).url()
+
+  // Fallback chain: maxresdefault -> hqdefault -> coverImage -> gradient (via hasError)
+  const currentSrc = imgSrc ?? maxresThumbnail
+
+  const handleImageError = () => {
+    if (imgSrc === null) {
+      // First error: try hqdefault
+      setImgSrc(hqThumbnail)
+    } else if (imgSrc === hqThumbnail && coverImageUrl) {
+      // Second error: try coverImage
+      setImgSrc(coverImageUrl)
+    } else {
+      // All fallbacks failed: show gradient placeholder
+      setHasError(true)
+    }
+  }
+
   const href = `/blog/${post.slug.current}`
   const formattedPublishedAt = post.publishedAt
     ? dateFormatter.format(new Date(post.publishedAt))
@@ -40,13 +64,18 @@ export function VideoCard({post, className}: VideoCardProps) {
         aria-label={`Watch video: ${post.title}`}
       >
         <div className="relative aspect-video overflow-hidden bg-gray-800/70">
-          <Image
-            src={youtubeThumbnailUrl}
-            alt={post.coverImage?.alt ?? `Video thumbnail for ${post.title}`}
-            fill
-            className="object-cover transition duration-500 ease-out group-hover:scale-[1.02]"
-            sizes="(min-width: 1280px) 400px, (min-width: 768px) 50vw, 90vw"
-          />
+          {hasError ? (
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900" />
+          ) : (
+            <Image
+              src={currentSrc}
+              alt={post.coverImage?.alt ?? `Video thumbnail for ${post.title}`}
+              fill
+              className="object-cover transition duration-500 ease-out group-hover:scale-[1.02]"
+              sizes="(min-width: 1280px) 400px, (min-width: 768px) 50vw, 90vw"
+              onError={handleImageError}
+            />
+          )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90 transition duration-300 group-hover:opacity-100" />
 
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
