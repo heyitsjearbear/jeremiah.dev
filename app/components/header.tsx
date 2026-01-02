@@ -17,7 +17,7 @@ export default function Header() {
           </Link>
         </MagneticElement>
 
-        <div className="hidden md:flex gap-8 text-sm font-medium">
+        <div className="flex gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm font-medium">
           {navigation.map((link) => (
             <NavLinkComponent key={link.label} {...link} />
           ))}
