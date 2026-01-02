@@ -16,6 +16,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Jeremiah Ramiscal",
   description: "Student founder building tools for focus, clarity, and impact.",
+  metadataBase: new URL("https://jeremiah.dev"),
+  openGraph: {
+    title: "Jeremiah Ramiscal",
+    description: "Student founder building tools for focus, clarity, and impact.",
+    url: "https://jeremiah.dev",
+    siteName: "Jeremiah Ramiscal",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jeremiah Ramiscal",
+    description: "Student founder building tools for focus, clarity, and impact.",
+  },
 };
 
 export default function RootLayout({
