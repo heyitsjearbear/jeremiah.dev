@@ -2,16 +2,17 @@ import {getFocusTodos} from '@/app/lib/sanity'
 import TodoItem from './todo-item'
 
 export default async function QuickTodos() {
-  const {incomplete, completed, incompleteCount, completedCount} = await getFocusTodos()
-  const totalCount = incompleteCount + completedCount
-  const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+  const {incomplete, completed} = await getFocusTodos()
+  const displayedTotalCount = incomplete.length + completed.length
+  const displayedCompletedCount = completed.length
+  const progress = displayedTotalCount > 0 ? (displayedCompletedCount / displayedTotalCount) * 100 : 0
   const hasCompleted = completed.length > 0
-  const hasTodos = totalCount > 0
+  const hasTodos = displayedTotalCount > 0
 
   return (
     <div className="w-full h-full flex flex-col">
       <h3 className="text-sm font-medium text-gray-300 mb-1.5 flex-shrink-0">
-        Focus {hasTodos ? `(${completedCount}/${totalCount})` : ''}
+        Focus {hasTodos ? `(${displayedCompletedCount}/${displayedTotalCount})` : ''}
       </h3>
       <div className="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 flex-1 flex flex-col min-h-0">
         <div className="space-y-1 flex-1 overflow-y-scroll overflow-x-hidden pr-1 scrollbar-blue">
